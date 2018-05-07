@@ -1,0 +1,8 @@
+#map {
+    width: 960px;
+    height: 500px;
+}
+
+/*.leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-image-layer, .leaflet-pane > svg path, .leaflet-tile-container {*/
+    /*pointer-events: visible;*/
+/*}*/
