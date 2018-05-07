@@ -13,7 +13,7 @@ function projectPoint(x, y) {
     this.stream.point(point.x, point.y);
 }
 
-d3.json("./basel.json", (basel) => {
+d3.json("./basel.geojson", (basel) => {
     var transform = d3.geoTransform({point: projectPoint}),
         path = d3.geoPath().projection(transform);
 
@@ -31,7 +31,7 @@ d3.json("./basel.json", (basel) => {
         })
         .style("opacity", 0.5)
         .attr("stroke", "black")
-
+        .attr('stroke-width', 3)
         .attr("pointer-events", "visible")
         .on("mouseover", (d) => {
             d3.select(`#path${d.id}`).attr("fill", 'blue');
@@ -40,15 +40,7 @@ d3.json("./basel.json", (basel) => {
             d3.select(`#path${d.id}`).attr("fill", 'grey');
         });
 
-    let totalLength = feature.node().getTotalLength() || 200;
-    console.log(totalLength);
-    feature.each(function(d) { console.log(this); d.totalLength = this.getTotalLength(); })
-        .attr("stroke-dasharray", function(d) { console.log(d.totalLength); return d.totalLength + " " + d.totalLength; })
-        .attr("stroke-dashoffset", function(d) { return d.totalLength; })
-        .transition()
-        .duration(2000)
-        .ease("linear")
-        .attr("stroke-dashoffset", 0);
+
 
 
     map.on("zoom", reset);
@@ -69,5 +61,16 @@ d3.json("./basel.json", (basel) => {
         g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
         feature.attr("d", path);
+
+        let totalLength = feature.node().getTotalLength() || 200;
+        console.log(totalLength);
+        feature.each(function(d) { d.totalLength = this.getTotalLength(); })
+            .attr("stroke-dasharray", function(d) {return d.totalLength + " " + d.totalLength; })
+            .attr("stroke-dashoffset", function(d) { return d.totalLength; })
+            .transition()
+            .duration(5000)
+            .ease("linear")
+            .attr("stroke-dashoffset", 0);
+
     }
 });
