@@ -5,7 +5,7 @@ tiles.addTo(map);
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-    svg.attr("pointer-events", "visible");
+svg.attr("pointer-events", "visible");
 
 
 function projectPoint(x, y) {
@@ -19,24 +19,37 @@ d3.json("./basel.json", (basel) => {
 
     basel.features.map((el, ind) => {
         el.id = ind;
-    })
+    });
 
     var feature = g.selectAll("path")
         .data(basel.features)
         .enter().append("path")
         .attr("fill", 'grey')
+        .attr('d', d3.geoPath())
         .attr("id", (d) => {
             return 'path' + d.id;
         })
         .style("opacity", 0.5)
         .attr("stroke", "black")
-        .attr("pointer-events","visible")
-        .on("click", (fd) => {
-            console.log("click");
-            console.log(fd);
-            console.log(d3.select(`#path${fd.id}`));
-            d3.select(`#path${fd.id}`).style("opacity", 1);
+
+        .attr("pointer-events", "visible")
+        .on("mouseover", (d) => {
+            d3.select(`#path${d.id}`).attr("fill", 'blue');
+        })
+        .on("mouseout", (d) => {
+            d3.select(`#path${d.id}`).attr("fill", 'grey');
         });
+
+    let totalLength = feature.node().getTotalLength() || 200;
+    console.log(totalLength);
+    feature.each(function(d) { console.log(this); d.totalLength = this.getTotalLength(); })
+        .attr("stroke-dasharray", function(d) { console.log(d.totalLength); return d.totalLength + " " + d.totalLength; })
+        .attr("stroke-dashoffset", function(d) { return d.totalLength; })
+        .transition()
+        .duration(2000)
+        .ease("linear")
+        .attr("stroke-dashoffset", 0);
+
 
     map.on("zoom", reset);
     reset();
@@ -48,12 +61,12 @@ d3.json("./basel.json", (basel) => {
             bottomRight = bounds[1];
         console.log("reset");
 
-        svg .attr("width", bottomRight[0] - topLeft[0])
+        svg.attr("width", bottomRight[0] - topLeft[0])
             .attr("height", bottomRight[1] - topLeft[1])
             .style("left", topLeft[0] + "px")
             .style("top", topLeft[1] + "px");
 
-        g   .attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
         feature.attr("d", path);
     }
