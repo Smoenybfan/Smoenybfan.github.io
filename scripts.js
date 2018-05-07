@@ -5,41 +5,9 @@ tiles.addTo(map);
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-// var basels = [];
-// var baselOverlay = L.d3SvgOverlay((sel, proj) => {
-//     sel.selectAll('path').data(basels)
-//         .enter()
-//         .append('path')
-//         .attr('d', proj.pathFromGeojson)
-//         .attr('stroke', 'black')
-//         .attr('fill-opacity', '0.5')
-//         .attr('style', 'pointer-events:visiblePainted;')
-//         .attr('stroke-width', 1 / proj.scale)
-//         .on("click", (d) => {
-//             console.log("enter");
-//             console.log(d);
-//             console.log(d3.select(d));
-//             d3.select(this).style("opacity", 0.5);
-//         })
-//         .on("mouseleave", () => {
-//         d3.select(this).attr("opacity", 0.5)
-//     });
-//
-//
-//
-//
-// });
-//
-//
-// // L.control.layers({"Geo Tiles": tiles}, {"Countries": baselOverlay}).addTo(map);
-//
-//
-// d3.json("./basel.json", (basel) => {
-//     basels = basel.features;
-//     baselOverlay.addTo(map);
-// });
-//
-//
+    svg.attr("pointer-events", "visible");
+
+
 function projectPoint(x, y) {
     var point = map.latLngToLayerPoint(new L.LatLng(y, x));
     this.stream.point(point.x, point.y);
@@ -49,12 +17,26 @@ d3.json("./basel.json", (basel) => {
     var transform = d3.geoTransform({point: projectPoint}),
         path = d3.geoPath().projection(transform);
 
+    basel.features.map((el, ind) => {
+        el.id = ind;
+    })
+
     var feature = g.selectAll("path")
         .data(basel.features)
         .enter().append("path")
         .attr("fill", 'grey')
+        .attr("id", (d) => {
+            return 'path' + d.id;
+        })
         .style("opacity", 0.5)
-        .attr("stroke", "black");
+        .attr("stroke", "black")
+        .attr("pointer-events","visible")
+        .on("click", (fd) => {
+            console.log("click");
+            console.log(fd);
+            console.log(d3.select(`#path${fd.id}`));
+            d3.select(`#path${fd.id}`).style("opacity", 1);
+        });
 
     map.on("zoom", reset);
     reset();

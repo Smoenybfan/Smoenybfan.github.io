@@ -3,6 +3,24 @@
     height: 500px;
 }
 
-/*.leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-image-layer, .leaflet-pane > svg path, .leaflet-tile-container {*/
-    /*pointer-events: visible;*/
-/*}*/
+ .leaflet-pane > svg path{
+    pointer-events: visible;
+}
+
+.leaflet-container {
+    overflow: hidden;
+    -ms-touch-action: none;
+}
+
+.leaflet-bottom {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+
+.leaflet-control {
+    position: relative;
+    z-index: 7;
+    pointer-events: auto;
+}
