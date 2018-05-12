@@ -4,6 +4,7 @@ var tiles = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 tiles.addTo(map);
 
 let animationInterval;
+let data;
 
 //create an svg and add it to the leaflet overlay pane
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
@@ -21,6 +22,7 @@ function projectPoint(x, y) {
 //we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
 //inside here or be called from inside here.
 d3.json("./basel-streets.json", (basel) => {
+    data = basel;
 
     //we create a d3 geoTransform to map points into the correct space.
     var transform = d3.geoTransform({point: projectPoint}),
@@ -49,8 +51,28 @@ d3.json("./basel-streets.json", (basel) => {
         })
         .style("opacity", 0.5)
         .attr("stroke", "black")
+        .attr("class", 'flowline')
         .attr('stroke-width', 4.5)
         .attr("pointer-events", "visible");
+
+    //this part is the animation magic.
+    //first, we add the total length of each path to itself as an attribute
+    paths.each(function (d) {
+        d.totalLength = this.getTotalLength();
+    })
+
+    //then we add a stroke-dasharray attribute with value (totalLength of path, total length of path
+    //this will create a line of total length, followed by a gap with the same length
+    //note that this is a pattern that will be executed along the whole line
+        .attr("stroke-dasharray", function (d) {
+            return d.totalLength + " " + d.totalLength;
+        })
+        //now we add a stroke-dashoffset with value of whole length. this moves the whole stroke ("the visible path")
+        //the whole length along the path and the pattern. This means that the path now starts at the gap.
+        //It means the same thing as moving the path pattern.
+        .attr("stroke-dashoffset", function (d) {
+            return d.totalLength;
+        });
 
     // this line makes sure that the reset function is called to redraw our d3 elements
     map.on("zoom", reset);
@@ -74,9 +96,21 @@ d3.json("./basel-streets.json", (basel) => {
 
         //move it to the correct place
         g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+        g.selectAll('path').data(data.features).attr("fill", 'none')
+            .attr('d', pathGenerator)
+            .attr("id", (d) => {
+                return 'path' + d.id;
+            })
+            .style("opacity", 0.5)
+            .attr("stroke", "black")
+            .attr("class", 'flowline')
+            .attr('stroke-width', 4.5)
+            .attr("pointer-events", "visible");
 
         let transitionTime = 3000;
-        animationInterval = setInterval(() => {startAnimation(paths, transitionTime)}, transitionTime+500); //this should be solved via callback, this is just ugly
+        // animationInterval = setInterval(() => {
+        //     startAnimation(paths, transitionTime)
+        // }, transitionTime + 500); //this should be solved via callback, this is just ugly
 
     }
 });
@@ -86,29 +120,15 @@ d3.json("./basel-streets.json", (basel) => {
 function startAnimation(paths, transitionTime) {
     console.log(paths[0][0].attributes.getNamedItem('stroke-dasharray'));
     console.log(paths[0][0].attributes.getNamedItem('stroke-dashoffset'));
-    //this part is the animation magic.
-    //first, we add the total length of each path to itself as an attribute
-    paths.each(function (d) {
-        d.totalLength = this.getTotalLength();
-    })
-    //then we add a stroke-dasharray attribute with value (totalLength of path, total length of path
-    //this will create a line of total length, followed by a gap with the same length
-    //note that this is a pattern that will be executed along the whole line
-        .attr("stroke-dasharray", function (d) {
-            return d.totalLength + " " + d.totalLength;
-        })
-        //now we add a stroke-dashoffset with value of whole length. this moves the whole stroke ("the visible path")
-        //the whole length along the path and the pattern. This means that the path now starts at the gap.
-        //It means the same thing as moving the path pattern.
-        .attr("stroke-dashoffset", function (d) {
-            return d.totalLength;
-        })
-        //this is the moving part. The transition sets the stroke-dashoffset to 0 according to the duration
-        // You can see this as the pattern being moved along the line until the first part of the patttern (the
-        // visible dash with the whole path as length) starts at the start of the path
-        .transition()
-        .duration(transitionTime)
-        .ease("linear")
-        .attr("stroke-dashoffset", 0);
+
+
+    //this is the moving part. The transition sets the stroke-dashoffset to 0 according to the duration
+    // You can see this as the pattern being moved along the line until the first part of the patttern (the
+    // visible dash with the whole path as length) starts at the start of the path
+// .
+//     transition()
+//         .duration(transitionTime)
+//         .ease("linear")
+//         .attr("stroke-dashoffset", 0);
 
 }
