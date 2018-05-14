@@ -3,12 +3,14 @@ $(document).ready(function(){
     document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
     document.getElementById("dateSlider").oninput = function () {
         document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
+        drawPathsWithTrafficData(getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value));
     };
 
     document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
     document.getElementById("timeSlider").oninput = function () {
         document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
-    }
+        drawPathsWithTrafficData(getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value));
+    };
 });
 
 //accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
@@ -16,7 +18,15 @@ function getDateFromYearDay(yearDay){
     let firstOfJan = new Date(2017, 0, 1);
     let wantedDate = new Date(2017, 0, 1);
     wantedDate.setDate(yearDay);
-    return `${wantedDate.getDate()}.${wantedDate.getMonth()+1}.2017`
+    return `${formatDate(wantedDate.getDate())}.${formatDate(wantedDate.getMonth()+1)}.2017`
+}
+
+function formatDate(date){
+    if(date > 9){
+        return date;
+    } else {
+        return `0${date}`;
+    }
 }
 
 //accepts a number x between 0 and 86'400 and returns the time rounded to the next smaller full hour
@@ -24,7 +34,7 @@ function getHourFromSeconds(seconds){
     let firstOfJan = new Date(2017,0,1);
     let wantedDate = new Date(2017,0,1);
     wantedDate.setSeconds(seconds);
-    return `${formatHours(wantedDate.getHours())}:00-${formatHours(wantedDate.getHours()+1)}:00`
+    return `${formatHours(wantedDate.getHours())}:00 - ${formatHours(wantedDate.getHours()+1)}:00`
 }
 
 function formatHours(hour){
@@ -45,6 +55,7 @@ tiles.addTo(map);
 
 let animationInterval;
 let data;
+let veloData;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
@@ -165,8 +176,17 @@ d3.json("./streets.json", (basel) => {
     }
 });
 
-d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (veloData) => {
+d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
+
+    veloData = querriedVeloData;
+    drawPathsWithTrafficData(getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value));
+});
+
+function drawPathsWithTrafficData(date, time){
+    console.log(date);
+    console.log(time);
     let maxCount = 0;
+
     veloData.forEach(el => {
         Object.values(el).forEach(value => {
             if (!isNaN(value) && +value > maxCount) {
@@ -175,17 +195,18 @@ d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (veloData) => {
             }
         })
     });
-    let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 10]);
+    let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
     console.log(veloData);
     veloData.forEach((el) => {
         domEl = d3.select(`#path-${el.Strassenname}`);
         if (domEl) {
-            if (+el['01.01.2017 00:00 - 01:00'] <= 0) {
+            console.log(`${date} ${time}`);
+            if (+el[`${date} ${time}`] <= 0) {
                 domEl.attr('stroke-width', 0);
             } else {
-                console.log(+el['01.01.2017 00:00 - 01:00']);
-                console.log(scale(+el['01.01.2017 00:00 - 01:00']));
-                domEl.attr('stroke-width', scale(+el['01.01.2017 00:00 - 01:00']));
+                console.log(+el[`${date} ${time}`]);
+                console.log(scale(+el[`${date} ${time}`]));
+                domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
             }
             domEl
                 .on("mouseover", (d) => {
@@ -193,7 +214,7 @@ d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (veloData) => {
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    div.html(el['01.01.2017 00:00 - 01:00'] + " Radfahrer")
+                    div.html(el[`${date} ${time}`] + " Radfahrer")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -206,7 +227,7 @@ d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (veloData) => {
                 });
         }
     })
-});
+}
 
 
 //this method accepts an array of paths as an argument and creates a "filling" animation from start to end
