@@ -37,14 +37,14 @@
         </ul>
     </div>
 </nav>
-<div class="row">
+<div class="row" style="margin-top: 20px">
     <div class="col s1"></div>
     <div class="col s6">
         <div class="">
             <p id="map">
             </p>
         </div>
-        <div class="row valign-wrapper">
+        <div class="row valign-wrapper" style="margin-bottom: -20px">
             <div class="col s10">
                 <form action="#">
                     <p class="range-field">
@@ -61,6 +61,24 @@
                 </div>
             </div>
         </div>
+        <div class="row valign-wrapper" style="margin-bottom: -25px">
+            <div class="col s10">
+                <form action="#">
+                    <p class="range-field">
+                        <input type="range" id="timeSlider" min="1" max="85399"/>
+                    </p>
+                </form>
+            </div>
+            <div class="col s2">
+                <div class="card hoverable">
+                    <div class="card-body ">
+                        <div id="timePicked" class="valign-wrapper"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div class="col s4">
         <div class="card">

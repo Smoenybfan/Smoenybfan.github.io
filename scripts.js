@@ -3,16 +3,39 @@ $(document).ready(function(){
     document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
     document.getElementById("dateSlider").oninput = function () {
         document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
+    };
+
+    document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
+    document.getElementById("timeSlider").oninput = function () {
+        document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
     }
 });
 
-//accepts a number x between 0 and 365 and returns the date on the x-th day since the year 2017 began
+//accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
 function getDateFromYearDay(yearDay){
-    console.log(yearDay);
     let firstOfJan = new Date(2017, 0, 1);
     let wantedDate = new Date(2017, 0, 1);
     wantedDate.setDate(yearDay);
     return `${wantedDate.getDate()}.${wantedDate.getMonth()+1}.2017`
+}
+
+//accepts a number x between 0 and 86'400 and returns the time rounded to the next smaller full hour
+function getHourFromSeconds(seconds){
+    let firstOfJan = new Date(2017,0,1);
+    let wantedDate = new Date(2017,0,1);
+    wantedDate.setSeconds(seconds);
+    return `${formatHours(wantedDate.getHours())}:00-${formatHours(wantedDate.getHours()+1)}:00`
+}
+
+function formatHours(hour){
+    if(hour < 10){
+        return `0${hour}`;
+    }
+    else if(hour>23){
+        return '00';
+    } else{
+        return hour;
+    }
 }
 
 // /Create map and its layer
