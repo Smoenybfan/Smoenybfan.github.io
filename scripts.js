@@ -1,10 +1,36 @@
-//Create map and its layer
+$(document).ready(function(){
+    $('.tabs').tabs();
+    document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
+    document.getElementById("dateSlider").oninput = function () {
+        document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
+    }
+});
+
+//accepts a number x between 0 and 365 and returns the date on the x-th day since the year 2017 began
+function getDateFromYearDay(yearDay){
+    console.log(yearDay);
+    let firstOfJan = new Date(2017, 0, 1);
+    let wantedDate = new Date(2017, 0, 1);
+    wantedDate.setDate(yearDay);
+    return `${wantedDate.getDate()}.${wantedDate.getMonth()+1}.2017`
+}
+
+// /Create map and its layer
 var map = new L.Map("map", {center: [47.55, 7.59], zoom: 13});
 var tiles = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 tiles.addTo(map);
 
 let animationInterval;
 let data;
+
+//this is the hover path tooltip
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+//this is the handle for the divTimeout
+//the usage of this is to cancel the timeout of the disappearing of the div
+let divTimeoutHandle;
 
 //create an svg and add it to the leaflet overlay pane
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
@@ -21,8 +47,9 @@ function projectPoint(x, y) {
 
 //we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
 //inside here or be called from inside here.
-d3.json("./basel-streets.json", (basel) => {
+d3.json("./streets.json", (basel) => {
     data = basel;
+    console.log(basel);
 
     //we create a d3 geoTransform to map points into the correct space.
     var transform = d3.geoTransform({point: projectPoint}),
@@ -47,12 +74,12 @@ d3.json("./basel-streets.json", (basel) => {
         .attr("fill", 'none')
         .attr('d', pathGenerator)
         .attr("id", (d) => {
-            return 'path' + d.id;
+            return 'path-' + d.properties.Strassenname;
         })
         .style("opacity", 0.5)
         .attr("stroke", "black")
         .attr("class", 'flowline')
-        .attr('stroke-width', 4.5)
+        // .attr('stroke-width', 4.5)
         .attr("pointer-events", "visible");
 
     //this part is the animation magic.
@@ -99,12 +126,12 @@ d3.json("./basel-streets.json", (basel) => {
         g.selectAll('path').data(data.features).attr("fill", 'none')
             .attr('d', pathGenerator)
             .attr("id", (d) => {
-                return 'path' + d.id;
+                return 'path-' + d.properties.Strassenname;
             })
             .style("opacity", 0.5)
             .attr("stroke", "black")
             .attr("class", 'flowline')
-            .attr('stroke-width', 4.5)
+            // .attr('stroke-width', 4.5)
             .attr("pointer-events", "visible");
 
         let transitionTime = 3000;
@@ -113,6 +140,49 @@ d3.json("./basel-streets.json", (basel) => {
         // }, transitionTime + 500); //this should be solved via callback, this is just ugly
 
     }
+});
+
+d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (veloData) => {
+    let maxCount = 0;
+    veloData.forEach(el => {
+        Object.values(el).forEach(value => {
+            if (!isNaN(value) && +value > maxCount) {
+                console.log(value);
+                maxCount = +value;
+            }
+        })
+    });
+    let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 10]);
+    console.log(veloData);
+    veloData.forEach((el) => {
+        domEl = d3.select(`#path-${el.Strassenname}`);
+        if (domEl) {
+            if (+el['01.01.2017 00:00 - 01:00'] <= 0) {
+                domEl.attr('stroke-width', 0);
+            } else {
+                console.log(+el['01.01.2017 00:00 - 01:00']);
+                console.log(scale(+el['01.01.2017 00:00 - 01:00']));
+                domEl.attr('stroke-width', scale(+el['01.01.2017 00:00 - 01:00']));
+            }
+            domEl
+                .on("mouseover", (d) => {
+                    clearTimeout(divTimeoutHandle);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html(el['01.01.2017 00:00 - 01:00'] + " Radfahrer")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", (d) => {
+                    divTimeoutHandle = setTimeout(() => {
+                        div.transition()
+                            .duration(200)
+                            .style('opacity', 0);
+                    }, 3000)
+                });
+        }
+    })
 });
 
 

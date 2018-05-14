@@ -1,5 +1,5 @@
 #map {
-    width: 960px;
+    /*width: 960px;*/
     height: 500px;
 }
 
@@ -27,9 +27,9 @@
 
 .flowline {
     fill: none;
-    stroke: black;
+    stroke: blue;
     opacity: 0.5;
-    stroke-width: 4;
+    /*stroke-width: 4;*/
     stroke-dasharray: 10, 10;
     animation: flow 1s linear infinite;
     -webkit-animation: flow 1s linear infinite;
@@ -53,4 +53,18 @@
     to {
         stroke-dashoffset: 0;
     }
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 60px;
+    height: 35px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 999;
 }

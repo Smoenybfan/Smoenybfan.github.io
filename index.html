@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
+    <!--Jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <!--<script src="https://d3js.org/d3.v5.min.js"></script>-->
+    <!--d3 scripts-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.9/d3.min.js"></script>
     <script src="d3-geo-projection/d3-geo-projection.js"></script>
     <script src="d3-geo/d3-geo.js"></script>
+    <script src="https://d3js.org/d3-scale.v2.min.js"></script>
 
 
+    <!--Materialize stylesheets and scripts-->
+    <script src="materialize/js/materialize.js"></script>
+    <link rel="stylesheet" href="materialize/css/materialize.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!--Leaflet stylesheets and scripts-->
     <script src="leaflet/leaflet.js"></script>
     <script src="Leaflet.D3SvgOverlay-master/Leaflet.D3SvgOverlay-master/L.D3SvgOverlay.js"></script>
     <link rel="stylesheet" href="leaflet/leaflet.css"/>
@@ -19,11 +29,62 @@
 
 </head>
 <body>
-<div class="">
-<p id="map">
+<nav>
+    <div class="nav-wrapper  teal darken-2">
+        <a href="#" class="brand-logo" style="margin-left: 10px">Verkehrszähldaten Visualisierung 2018</a>
+        <ul id="nav-mobil" class="right hid-on-med-and-down">
+            <!--<li><a href="#">Nowhere</a> </li>-->
+        </ul>
+    </div>
+</nav>
+<div class="row">
+    <div class="col s1"></div>
+    <div class="col s6">
+        <div class="">
+            <p id="map">
+            </p>
+        </div>
+        <div class="row valign-wrapper">
+            <div class="col s10">
+                <form action="#">
+                    <p class="range-field">
+                        <input type="range" id="dateSlider" min="1" max="365"/>
+                    </p>
+                </form>
+            </div>
+            <div class="col s2">
+                <div class="card hoverable">
+                    <div class="card-body ">
+                        <div id="datePicked" class="valign-wrapper"></div>
 
-
-    </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s4">
+        <div class="card">
+            <div class="card-tabs">
+                <ul class="tabs tabs-fixed-width">
+                    <li class="tab"><a href="#tab0">About the data</a></li>
+                    <li class="tab"><a href="#tab1">Our Tools</a></li>
+                </ul>
+            </div>
+            <div class="card-content grey lighten-3">
+                <div id="tab0">
+                    We like Open Data.
+                </div>
+                <div id="tab1">
+                    We used D3, Leaflet and Materialize.
+                    We used D3, Leaflet and Materialize.
+                    We used D3, Leaflet and Materialize.
+                    We used D3, Leaflet and Materialize.
+                    We used D3, Leaflet and Materialize.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s1"></div>
 </div>
 <script src="scripts.js"></script>
 </body>
