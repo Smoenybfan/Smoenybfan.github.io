@@ -1,26 +1,32 @@
 $(document).ready(function(){
+    let trafType = ($('input[type=radio][name=type]').val());
+    let selectedData = veloData;
+
     $('.tabs').tabs();
     document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
     document.getElementById("dateSlider").oninput = function () {
         document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
-        drawPathsWithTrafficData(veloData, getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value));
+        drawPathsWithTrafficData(selectedData, getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value), trafType);
     };
 
     document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
     document.getElementById("timeSlider").oninput = function () {
         document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
-        drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value));
+        drawPathsWithTrafficData(selectedData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value), trafType);
     };
 
     $('input[type=radio][name=type]').change(function() {
+        console.log('change');
         let date = getDateFromYearDay(document.getElementById('dateSlider').value);
         let hour = getHourFromSeconds(document.getElementById('timeSlider').value);
+        trafType=this.value;
+        console.log(this.value);
 
         switch (this.value){
-            case 'pw': drawPathsWithTrafficData(pwData, date, hour); break;
-            case 'velo': drawPathsWithTrafficData(veloData, date, hour); break;
-            case 'bus': drawPathsWithTrafficData(busData, date, hour); break;
-            case 'all': drawPathsWithAllTrafficData(date, hour); break;
+            case 'Personenwagen': drawPathsWithTrafficData(pwData, date, hour, trafType); selectedData = pwData;  break;
+            case 'Velofahrer': drawPathsWithTrafficData(veloData, date, hour, trafType); selectedData = veloData; break;
+            case 'Busse': drawPathsWithTrafficData(busData, date, hour, trafType); selectedData = busData; break;
+           // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
         }
     });
 
@@ -194,13 +200,14 @@ d3.json("./streets.json", (basel) => {
     readPwData();
 });
 
+//this is the start data, therefore display it
 d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
 
     veloData = querriedVeloData;
-    drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value));
+    drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
 });
 
-function drawPathsWithTrafficData(drawData, date, time){
+function drawPathsWithTrafficData(drawData, date, time, name){
     console.log(date);
     console.log(time);
     let maxCount = 0;
@@ -215,16 +222,18 @@ function drawPathsWithTrafficData(drawData, date, time){
     });
     let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
     console.log(drawData);
+
     drawData.forEach((el) => {
+        console.log('data?');
         domEl = d3.select(`#path-${el.Strassenname}`);
         if (domEl) {
             console.log(`${date} ${time}`);
             if (+el[`${date} ${time}`] <= 0) {
-                domEl.attr('stroke-width', 0);
+                domEl.style('stroke-width', 0);
             } else {
                 console.log(+el[`${date} ${time}`]);
                 console.log(scale(+el[`${date} ${time}`]));
-                domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
+                domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
             }
             domEl
                 .on("mouseover", (d) => {
@@ -232,7 +241,8 @@ function drawPathsWithTrafficData(drawData, date, time){
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    div.html(el[`${date} ${time}`] + " Radfahrer")
+                    console.log(name);
+                    div.html(el[`${date} ${time}`] + ' ' + name)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -247,6 +257,7 @@ function drawPathsWithTrafficData(drawData, date, time){
     })
 }
 
+/*
 function drawPathsWithAllTrafficData(date, time){
 
     let maxCount = 0;
@@ -290,11 +301,12 @@ function drawPathsWithAllTrafficData(date, time){
         }
     })
 }
+*/
 
 function readBusData(){
-    d3.csv('', (readData) => {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/bus.csv', (readData) => {
         busData = readData;
-    })
+    });
 }
 
 function readPwData(){
