@@ -11,6 +11,19 @@ $(document).ready(function(){
         document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
         drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value));
     };
+
+    $('input[type=radio][name=type]').change(function() {
+        let date = getDateFromYearDay(document.getElementById('dateSlider').value);
+        let hour = getHourFromSeconds(document.getElementById('timeSlider').value);
+
+        switch (this.value){
+            case 'pw': drawPathsWithTrafficData(pwData, date, hour); break;
+            case 'velo': drawPathsWithTrafficData(veloData, date, hour); break;
+            case 'bus': drawPathsWithTrafficData(busData, date, hour); break;
+            case 'all': drawPathsWithAllTrafficData(date, hour); break;
+        }
+    });
+
 });
 
 //accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
@@ -211,6 +224,50 @@ function drawPathsWithTrafficData(drawData, date, time){
             } else {
                 console.log(+el[`${date} ${time}`]);
                 console.log(scale(+el[`${date} ${time}`]));
+                domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
+            }
+            domEl
+                .on("mouseover", (d) => {
+                    clearTimeout(divTimeoutHandle);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html(el[`${date} ${time}`] + " Radfahrer")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", (d) => {
+                    divTimeoutHandle = setTimeout(() => {
+                        div.transition()
+                            .duration(200)
+                            .style('opacity', 0);
+                    }, 3000)
+                });
+        }
+    })
+}
+
+function drawPathsWithAllTrafficData(date, time){
+
+    let maxCount = 0;
+
+    veloData.forEach(el => {
+        Object.values(el).forEach(value => {
+            if (!isNaN(value) && +value > maxCount) {
+                console.log(value);
+                maxCount = +value;
+            }
+        })
+    });
+    let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
+
+    veloData.forEach((el) => {
+        domEl = d3.select(`#path-${el.Strassenname}`);
+        if (domEl) {
+
+            if (+el[`${date} ${time}`] <= 0) {
+                domEl.attr('stroke-width', 0);
+            } else {
                 domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
             }
             domEl
