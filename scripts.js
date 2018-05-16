@@ -1,6 +1,5 @@
 $(document).ready(function(){
     let trafType = ($('input[type=radio][name=type]').val());
-    let selectedData = veloData;
 
     $('.tabs').tabs();
     document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
@@ -77,6 +76,7 @@ let data;
 let veloData;
 let busData;
 let pwData;
+let selectedData;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
@@ -202,14 +202,15 @@ d3.json("./streets.json", (basel) => {
 
 //this is the start data, therefore display it
 d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
-
     veloData = querriedVeloData;
+    selectedData = veloData;
     drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
 });
 
 function drawPathsWithTrafficData(drawData, date, time, name){
     console.log(date);
     console.log(time);
+    console.log(drawData);
     let maxCount = 0;
 
     drawData.forEach(el => {
@@ -231,7 +232,7 @@ function drawPathsWithTrafficData(drawData, date, time, name){
             if (+el[`${date} ${time}`] <= 0) {
                 domEl.style('stroke-width', 0);
             } else {
-                console.log(+el[`${date} ${time}`]);
+                //console.log(domEl.style('stroke-width'));
                 console.log(scale(+el[`${date} ${time}`]));
                 domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
             }
