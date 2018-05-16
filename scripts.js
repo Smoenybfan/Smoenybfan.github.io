@@ -3,13 +3,13 @@ $(document).ready(function(){
     document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
     document.getElementById("dateSlider").oninput = function () {
         document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
-        drawPathsWithTrafficData(getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value));
+        drawPathsWithTrafficData(veloData, getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value));
     };
 
     document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
     document.getElementById("timeSlider").oninput = function () {
         document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
-        drawPathsWithTrafficData(getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value));
+        drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value));
     };
 });
 
@@ -56,6 +56,8 @@ tiles.addTo(map);
 let animationInterval;
 let data;
 let veloData;
+let busData;
+let pwData;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
@@ -174,20 +176,23 @@ d3.json("./streets.json", (basel) => {
         // }, transitionTime + 500); //this should be solved via callback, this is just ugly
 
     }
+
+    readBusData();
+    readPwData();
 });
 
 d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
 
     veloData = querriedVeloData;
-    drawPathsWithTrafficData(getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value));
+    drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value));
 });
 
-function drawPathsWithTrafficData(date, time){
+function drawPathsWithTrafficData(drawData, date, time){
     console.log(date);
     console.log(time);
     let maxCount = 0;
 
-    veloData.forEach(el => {
+    drawData.forEach(el => {
         Object.values(el).forEach(value => {
             if (!isNaN(value) && +value > maxCount) {
                 console.log(value);
@@ -196,8 +201,8 @@ function drawPathsWithTrafficData(date, time){
         })
     });
     let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
-    console.log(veloData);
-    veloData.forEach((el) => {
+    console.log(drawData);
+    drawData.forEach((el) => {
         domEl = d3.select(`#path-${el.Strassenname}`);
         if (domEl) {
             console.log(`${date} ${time}`);
@@ -226,6 +231,18 @@ function drawPathsWithTrafficData(date, time){
                     }, 3000)
                 });
         }
+    })
+}
+
+function readBusData(){
+    d3.csv('', (readData) => {
+        busData = readData;
+    })
+}
+
+function readPwData(){
+    d3.csv('', (readData) => {
+        pwData = readData;
     })
 }
 
