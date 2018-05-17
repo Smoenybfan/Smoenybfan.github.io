@@ -1,28 +1,58 @@
-$(document).ready(function(){
+$(document).ready(function () {
+    let trafType = ($('input[type=radio][name=type]').val());
+
     $('.tabs').tabs();
-    document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
+    document.getElementById("datePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
     document.getElementById("dateSlider").oninput = function () {
-        document.getElementById("datePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
-        drawPathsWithTrafficData(getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value));
+        document.getElementById("datePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
+        drawPathsWithTrafficData(selectedData, getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value), trafType);
     };
 
-    document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
+    document.getElementById("timePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
     document.getElementById("timeSlider").oninput = function () {
-        document.getElementById("timePicked").innerHTML =`<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
-        drawPathsWithTrafficData(getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value));
+        document.getElementById("timePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
+        drawPathsWithTrafficData(selectedData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value), trafType);
     };
+
+    $('input[type=radio][name=type]').change(function () {
+        console.log('change');
+        let date = getDateFromYearDay(document.getElementById('dateSlider').value);
+        let hour = getHourFromSeconds(document.getElementById('timeSlider').value);
+        trafType = this.value;
+        console.log(this.value);
+
+        switch (this.value) {
+            case 'Personenwagen':
+                drawPaths('./basel_moto.geojson', pwData, trafType);
+                selectedData = pwData;
+                //drawPathsWithTrafficData(pwData, date, hour, trafType);
+                break;
+            case 'Velofahrer':
+                drawPaths('./streets.json', veloData, trafType);
+                selectedData = veloData;
+                //drawPathsWithTrafficData(veloData, date, hour, trafType);
+                break;
+            case 'Busse':
+                drawPaths('./basel_moto.geojson', busData, trafType);
+                selectedData = busData;
+                //drawPathsWithTrafficData(busData, date, hour, trafType);
+                break;
+            // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
+        }
+    });
+
 });
 
 //accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
-function getDateFromYearDay(yearDay){
+function getDateFromYearDay(yearDay) {
     let firstOfJan = new Date(2017, 0, 1);
     let wantedDate = new Date(2017, 0, 1);
     wantedDate.setDate(yearDay);
-    return `${formatDate(wantedDate.getDate())}.${formatDate(wantedDate.getMonth()+1)}.2017`
+    return `${formatDate(wantedDate.getDate())}.${formatDate(wantedDate.getMonth() + 1)}.2017`
 }
 
-function formatDate(date){
-    if(date > 9){
+function formatDate(date) {
+    if (date > 9) {
         return date;
     } else {
         return `0${date}`;
@@ -30,20 +60,20 @@ function formatDate(date){
 }
 
 //accepts a number x between 0 and 86'400 and returns the time rounded to the next smaller full hour
-function getHourFromSeconds(seconds){
-    let firstOfJan = new Date(2017,0,1);
-    let wantedDate = new Date(2017,0,1);
+function getHourFromSeconds(seconds) {
+    let firstOfJan = new Date(2017, 0, 1);
+    let wantedDate = new Date(2017, 0, 1);
     wantedDate.setSeconds(seconds);
-    return `${formatHours(wantedDate.getHours())}:00 - ${formatHours(wantedDate.getHours()+1)}:00`
+    return `${formatHours(wantedDate.getHours())}:00 - ${formatHours(wantedDate.getHours() + 1)}:00`
 }
 
-function formatHours(hour){
-    if(hour < 10){
+function formatHours(hour) {
+    if (hour < 10) {
         return `0${hour}`;
     }
-    else if(hour>23){
+    else if (hour > 23) {
         return '00';
-    } else{
+    } else {
         return hour;
     }
 }
@@ -56,6 +86,9 @@ tiles.addTo(map);
 let animationInterval;
 let data;
 let veloData;
+let busData;
+let pwData;
+let selectedData;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
@@ -81,83 +114,34 @@ function projectPoint(x, y) {
 
 //we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
 //inside here or be called from inside here.
-d3.json("./streets.json", (basel) => {
-    data = basel;
-    console.log(basel);
+function drawPaths(streetsFilePath, drawData, verkehrsart) {
+    d3.json(streetsFilePath, (basel) => {
+        data = basel;
+        console.log(basel);
 
-    //we create a d3 geoTransform to map points into the correct space.
-    var transform = d3.geoTransform({point: projectPoint}),
-        //this returns a path generator which we will use later
-        pathGenerator = d3.geoPath().projection(transform);
+        //we create a d3 geoTransform to map points into the correct space.
+        var transform = d3.geoTransform({point: projectPoint}),
+            //this returns a path generator which we will use later
+            pathGenerator = d3.geoPath().projection(transform);
 
-    //we add an id to each feature from our dataset to make sure we can easily access it later.
-    basel.features.map((el, ind) => {
-        el.id = ind;
-    });
-
-    // here starts our d3 magic. we add our data from the json file as paths to the group on the svg overlay.
-    // d3 fills all paths per default so we have to turn it off via fill: none
-    // we then add our path generator
-    // the id is to make sure we can access it from everywhere. D3 seems to have troubles with the 'this' keyword when
-    //used with leaflet.
-    // We add some width and a color for our paths and make sure the mouse events are triggered.
-
-    var paths = g.selectAll("path")
-        .data(basel.features)
-        .enter().append("path")
-        .attr("fill", 'none')
-        .attr('d', pathGenerator)
-        .attr("id", (d) => {
-            return 'path-' + d.properties.Strassenname;
-        })
-        .style("opacity", 0.5)
-        .attr("stroke", "black")
-        .attr("class", 'flowline')
-        // .attr('stroke-width', 4.5)
-        .attr("pointer-events", "visible");
-
-    //this part is the animation magic.
-    //first, we add the total length of each path to itself as an attribute
-    paths.each(function (d) {
-        d.totalLength = this.getTotalLength();
-    })
-
-    //then we add a stroke-dasharray attribute with value (totalLength of path, total length of path
-    //this will create a line of total length, followed by a gap with the same length
-    //note that this is a pattern that will be executed along the whole line
-        .attr("stroke-dasharray", function (d) {
-            return d.totalLength + " " + d.totalLength;
-        })
-        //now we add a stroke-dashoffset with value of whole length. this moves the whole stroke ("the visible path")
-        //the whole length along the path and the pattern. This means that the path now starts at the gap.
-        //It means the same thing as moving the path pattern.
-        .attr("stroke-dashoffset", function (d) {
-            return d.totalLength;
+        //we add an id to each feature from our dataset to make sure we can easily access it later.
+        basel.features.map((el, ind) => {
+            el.id = ind;
         });
 
-    // this line makes sure that the reset function is called to redraw our d3 elements
-    map.on("zoom", reset);
-    //this makes sure it is called on instantiation
-    reset();
+        // here starts our d3 magic. we add our data from the json file as paths to the group on the svg overlay.
+        // d3 fills all paths per default so we have to turn it off via fill: none
+        // we then add our path generator
+        // the id is to make sure we can access it from everywhere. D3 seems to have troubles with the 'this' keyword when
+        //used with leaflet.
+        // We add some width and a color for our paths and make sure the mouse events are triggered.
+        g.remove();
+        g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-    // Reposition the SVG to cover the features.
-    function reset() {
-        //get the boundary box of the path group
-
-        var bounds = pathGenerator.bounds(basel),
-            topLeft = bounds[0],
-            bottomRight = bounds[1];
-
-
-        //adjust the svg
-        svg.attr("width", bottomRight[0] - topLeft[0])
-            .attr("height", bottomRight[1] - topLeft[1])
-            .style("left", topLeft[0] + "px")
-            .style("top", topLeft[1] + "px");
-
-        //move it to the correct place
-        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-        g.selectAll('path').data(data.features).attr("fill", 'none')
+        var paths = g.selectAll("path")
+            .data(basel.features)
+            .enter().append("path")
+            .attr("fill", 'none')
             .attr('d', pathGenerator)
             .attr("id", (d) => {
                 return 'path-' + d.properties.Strassenname;
@@ -168,23 +152,136 @@ d3.json("./streets.json", (basel) => {
             // .attr('stroke-width', 4.5)
             .attr("pointer-events", "visible");
 
-        let transitionTime = 3000;
-        // animationInterval = setInterval(() => {
-        //     startAnimation(paths, transitionTime)
-        // }, transitionTime + 500); //this should be solved via callback, this is just ugly
+        //this part is the animation magic.
+        //first, we add the total length of each path to itself as an attribute
+        paths.each(function (d) {
+            d.totalLength = this.getTotalLength();
+        })
 
-    }
-});
+        //then we add a stroke-dasharray attribute with value (totalLength of path, total length of path
+        //this will create a line of total length, followed by a gap with the same length
+        //note that this is a pattern that will be executed along the whole line
+            .attr("stroke-dasharray", function (d) {
+                return d.totalLength + " " + d.totalLength;
+            })
+            //now we add a stroke-dashoffset with value of whole length. this moves the whole stroke ("the visible path")
+            //the whole length along the path and the pattern. This means that the path now starts at the gap.
+            //It means the same thing as moving the path pattern.
+            .attr("stroke-dashoffset", function (d) {
+                return d.totalLength;
+            });
 
+        // this line makes sure that the reset function is called to redraw our d3 elements
+        map.on("zoom", reset);
+        //this makes sure it is called on instantiation
+        reset();
+
+        // Reposition the SVG to cover the features.
+        function reset() {
+            //get the boundary box of the path group
+
+            var bounds = pathGenerator.bounds(basel),
+                topLeft = bounds[0],
+                bottomRight = bounds[1];
+
+
+            //adjust the svg
+            svg.attr("width", bottomRight[0] - topLeft[0])
+                .attr("height", bottomRight[1] - topLeft[1])
+                .style("left", topLeft[0] + "px")
+                .style("top", topLeft[1] + "px");
+
+            //move it to the correct place
+            g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+            g.selectAll('path').data(data.features).attr("fill", 'none')
+                .attr('d', pathGenerator)
+                .attr("id", (d) => {
+                    return 'path-' + d.properties.Strassenname;
+                })
+                .style("opacity", 0.5)
+                .attr("stroke", "black")
+                .attr("class", 'flowline')
+                // .attr('stroke-width', 4.5)
+                .attr("pointer-events", "visible");
+
+            let transitionTime = 3000;
+            // animationInterval = setInterval(() => {
+            //     startAnimation(paths, transitionTime)
+            // }, transitionTime + 500); //this should be solved via callback, this is just ugly
+
+        }
+
+        drawPathsWithTrafficData(drawData,getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), verkehrsart )
+
+    });
+}
+
+
+readBusData();
+readPwData();
+
+
+//this is the start data, therefore display it
 d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
-
     veloData = querriedVeloData;
-    drawPathsWithTrafficData(getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value));
+    selectedData = veloData;
+    drawPaths('./streets.json', veloData, 'Velofahrer');
+    //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
 });
 
-function drawPathsWithTrafficData(date, time){
-    console.log(date);
-    console.log(time);
+function drawPathsWithTrafficData(drawData, date, time, name) {
+    let maxCount = 0;
+
+    drawData.forEach(el => {
+        Object.values(el).forEach(value => {
+            if (!isNaN(value) && +value > maxCount) {
+                console.log(value);
+                maxCount = +value;
+            }
+        })
+    });
+    let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
+    console.log(drawData);
+
+    drawData.forEach((el) => {
+        console.log(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
+        domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
+        if (domEl) {
+            console.log(`${date} ${time}`);
+            if (+el[`${date} ${time}`] <= 0) {
+                domEl.style('stroke-width', 0);
+            } else {
+                //console.log(domEl.style('stroke-width'));
+                console.log(scale(+el[`${date} ${time}`]));
+                console.log(domEl);
+                domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
+                console.log(domEl);
+            }
+            domEl
+                .on("mouseover", (d) => {
+                    clearTimeout(divTimeoutHandle);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    console.log(name);
+                    div.html(el[`${date} ${time}`] + ' ' + name)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", (d) => {
+                    divTimeoutHandle = setTimeout(() => {
+                        div.transition()
+                            .duration(200)
+                            .style('opacity', 0);
+                    }, 3000)
+                });
+        }
+    })
+}
+
+/*
+function drawPathsWithAllTrafficData(date, time){
+
     let maxCount = 0;
 
     veloData.forEach(el => {
@@ -196,16 +293,14 @@ function drawPathsWithTrafficData(date, time){
         })
     });
     let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
-    console.log(veloData);
+
     veloData.forEach((el) => {
         domEl = d3.select(`#path-${el.Strassenname}`);
         if (domEl) {
-            console.log(`${date} ${time}`);
+
             if (+el[`${date} ${time}`] <= 0) {
                 domEl.attr('stroke-width', 0);
             } else {
-                console.log(+el[`${date} ${time}`]);
-                console.log(scale(+el[`${date} ${time}`]));
                 domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
             }
             domEl
@@ -226,6 +321,19 @@ function drawPathsWithTrafficData(date, time){
                     }, 3000)
                 });
         }
+    })
+}
+*/
+
+function readBusData() {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/bus.csv', (readData) => {
+        busData = readData;
+    });
+}
+
+function readPwData() {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/pw.csv', (readData) => {
+        pwData = readData;
     })
 }
 
