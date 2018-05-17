@@ -22,9 +22,9 @@ $(document).ready(function(){
         console.log(this.value);
 
         switch (this.value){
-            case 'Personenwagen': drawPathsWithTrafficData(pwData, date, hour, trafType); selectedData = pwData;  break;
-            case 'Velofahrer': drawPathsWithTrafficData(veloData, date, hour, trafType); selectedData = veloData; break;
-            case 'Busse': drawPathsWithTrafficData(busData, date, hour, trafType); selectedData = busData; break;
+            case 'Personenwagen': drawPaths('./basel_moto.geojson'); drawPathsWithTrafficData(pwData, date, hour, trafType); selectedData = pwData;  break;
+            case 'Velofahrer': drawPaths('./streets.json'); drawPathsWithTrafficData(veloData, date, hour, trafType); selectedData = veloData; break;
+            case 'Busse': drawPaths('./basel_moto.geojson'); drawPathsWithTrafficData(busData, date, hour, trafType); selectedData = busData; break;
            // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
         }
     });
@@ -102,83 +102,32 @@ function projectPoint(x, y) {
 
 //we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
 //inside here or be called from inside here.
-d3.json("./streets.json", (basel) => {
-    data = basel;
-    console.log(basel);
+function drawPaths(streetsFilePath){
+    d3.json(streetsFilePath, (basel) => {
+        data = basel;
+        console.log(basel);
 
-    //we create a d3 geoTransform to map points into the correct space.
-    var transform = d3.geoTransform({point: projectPoint}),
-        //this returns a path generator which we will use later
-        pathGenerator = d3.geoPath().projection(transform);
+        //we create a d3 geoTransform to map points into the correct space.
+        var transform = d3.geoTransform({point: projectPoint}),
+            //this returns a path generator which we will use later
+            pathGenerator = d3.geoPath().projection(transform);
 
-    //we add an id to each feature from our dataset to make sure we can easily access it later.
-    basel.features.map((el, ind) => {
-        el.id = ind;
-    });
-
-    // here starts our d3 magic. we add our data from the json file as paths to the group on the svg overlay.
-    // d3 fills all paths per default so we have to turn it off via fill: none
-    // we then add our path generator
-    // the id is to make sure we can access it from everywhere. D3 seems to have troubles with the 'this' keyword when
-    //used with leaflet.
-    // We add some width and a color for our paths and make sure the mouse events are triggered.
-
-    var paths = g.selectAll("path")
-        .data(basel.features)
-        .enter().append("path")
-        .attr("fill", 'none')
-        .attr('d', pathGenerator)
-        .attr("id", (d) => {
-            return 'path-' + d.properties.Strassenname;
-        })
-        .style("opacity", 0.5)
-        .attr("stroke", "black")
-        .attr("class", 'flowline')
-        // .attr('stroke-width', 4.5)
-        .attr("pointer-events", "visible");
-
-    //this part is the animation magic.
-    //first, we add the total length of each path to itself as an attribute
-    paths.each(function (d) {
-        d.totalLength = this.getTotalLength();
-    })
-
-    //then we add a stroke-dasharray attribute with value (totalLength of path, total length of path
-    //this will create a line of total length, followed by a gap with the same length
-    //note that this is a pattern that will be executed along the whole line
-        .attr("stroke-dasharray", function (d) {
-            return d.totalLength + " " + d.totalLength;
-        })
-        //now we add a stroke-dashoffset with value of whole length. this moves the whole stroke ("the visible path")
-        //the whole length along the path and the pattern. This means that the path now starts at the gap.
-        //It means the same thing as moving the path pattern.
-        .attr("stroke-dashoffset", function (d) {
-            return d.totalLength;
+        //we add an id to each feature from our dataset to make sure we can easily access it later.
+        basel.features.map((el, ind) => {
+            el.id = ind;
         });
 
-    // this line makes sure that the reset function is called to redraw our d3 elements
-    map.on("zoom", reset);
-    //this makes sure it is called on instantiation
-    reset();
+        // here starts our d3 magic. we add our data from the json file as paths to the group on the svg overlay.
+        // d3 fills all paths per default so we have to turn it off via fill: none
+        // we then add our path generator
+        // the id is to make sure we can access it from everywhere. D3 seems to have troubles with the 'this' keyword when
+        //used with leaflet.
+        // We add some width and a color for our paths and make sure the mouse events are triggered.
 
-    // Reposition the SVG to cover the features.
-    function reset() {
-        //get the boundary box of the path group
-
-        var bounds = pathGenerator.bounds(basel),
-            topLeft = bounds[0],
-            bottomRight = bounds[1];
-
-
-        //adjust the svg
-        svg.attr("width", bottomRight[0] - topLeft[0])
-            .attr("height", bottomRight[1] - topLeft[1])
-            .style("left", topLeft[0] + "px")
-            .style("top", topLeft[1] + "px");
-
-        //move it to the correct place
-        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-        g.selectAll('path').data(data.features).attr("fill", 'none')
+        var paths = g.selectAll("path")
+            .data(basel.features)
+            .enter().append("path")
+            .attr("fill", 'none')
             .attr('d', pathGenerator)
             .attr("id", (d) => {
                 return 'path-' + d.properties.Strassenname;
@@ -189,16 +138,72 @@ d3.json("./streets.json", (basel) => {
             // .attr('stroke-width', 4.5)
             .attr("pointer-events", "visible");
 
-        let transitionTime = 3000;
-        // animationInterval = setInterval(() => {
-        //     startAnimation(paths, transitionTime)
-        // }, transitionTime + 500); //this should be solved via callback, this is just ugly
+        //this part is the animation magic.
+        //first, we add the total length of each path to itself as an attribute
+        paths.each(function (d) {
+            d.totalLength = this.getTotalLength();
+        })
 
-    }
+        //then we add a stroke-dasharray attribute with value (totalLength of path, total length of path
+        //this will create a line of total length, followed by a gap with the same length
+        //note that this is a pattern that will be executed along the whole line
+            .attr("stroke-dasharray", function (d) {
+                return d.totalLength + " " + d.totalLength;
+            })
+            //now we add a stroke-dashoffset with value of whole length. this moves the whole stroke ("the visible path")
+            //the whole length along the path and the pattern. This means that the path now starts at the gap.
+            //It means the same thing as moving the path pattern.
+            .attr("stroke-dashoffset", function (d) {
+                return d.totalLength;
+            });
 
-    readBusData();
-    readPwData();
-});
+        // this line makes sure that the reset function is called to redraw our d3 elements
+        map.on("zoom", reset);
+        //this makes sure it is called on instantiation
+        reset();
+
+        // Reposition the SVG to cover the features.
+        function reset() {
+            //get the boundary box of the path group
+
+            var bounds = pathGenerator.bounds(basel),
+                topLeft = bounds[0],
+                bottomRight = bounds[1];
+
+
+            //adjust the svg
+            svg.attr("width", bottomRight[0] - topLeft[0])
+                .attr("height", bottomRight[1] - topLeft[1])
+                .style("left", topLeft[0] + "px")
+                .style("top", topLeft[1] + "px");
+
+            //move it to the correct place
+            g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+            g.selectAll('path').data(data.features).attr("fill", 'none')
+                .attr('d', pathGenerator)
+                .attr("id", (d) => {
+                    return 'path-' + d.properties.Strassenname;
+                })
+                .style("opacity", 0.5)
+                .attr("stroke", "black")
+                .attr("class", 'flowline')
+                // .attr('stroke-width', 4.5)
+                .attr("pointer-events", "visible");
+
+            let transitionTime = 3000;
+            // animationInterval = setInterval(() => {
+            //     startAnimation(paths, transitionTime)
+            // }, transitionTime + 500); //this should be solved via callback, this is just ugly
+
+        }
+
+
+    });
+}
+drawPaths('./streets.json');
+readBusData();
+readPwData();
+
 
 //this is the start data, therefore display it
 d3.csv('./VisualisierungVerkehrsdatenBasel/jedes_excel_isch_a_hueresohn.csv', (querriedVeloData) => {
