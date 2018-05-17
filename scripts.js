@@ -201,7 +201,7 @@ d3.json("./streets.json", (basel) => {
 });
 
 //this is the start data, therefore display it
-d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
+d3.csv('./VisualisierungVerkehrsdatenBasel/jedes_excel_isch_a_hueresohn.csv', (querriedVeloData) => {
     veloData = querriedVeloData;
     selectedData = veloData;
     drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
@@ -225,8 +225,8 @@ function drawPathsWithTrafficData(drawData, date, time, name){
     console.log(drawData);
 
     drawData.forEach((el) => {
-        console.log('data?');
-        domEl = d3.select(`#path-${el.Strassenname}`);
+        console.log(`#path-${el.Strassenname.slice(0,el.Strassenname.length - 5)}`);
+        domEl = d3.select(`#path-${el.Strassenname.slice(0,el.Strassenname.length - 5)}`);
         if (domEl) {
             console.log(`${date} ${time}`);
             if (+el[`${date} ${time}`] <= 0) {
@@ -234,7 +234,9 @@ function drawPathsWithTrafficData(drawData, date, time, name){
             } else {
                 //console.log(domEl.style('stroke-width'));
                 console.log(scale(+el[`${date} ${time}`]));
+                console.log(domEl);
                 domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
+                console.log(domEl);
             }
             domEl
                 .on("mouseover", (d) => {
