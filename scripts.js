@@ -332,7 +332,7 @@ function readBusData() {
 }
 
 function readPwData() {
-    d3.csv('', (readData) => {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/pw.csv', (readData) => {
         pwData = readData;
     })
 }
