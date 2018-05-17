@@ -25,17 +25,17 @@
     pointer-events: auto;
 }
 
-.flowline {
+.flowlineSpur1 {
     fill: none;
     stroke: blue;
     opacity: 0.5;
     /*stroke-width: 4;*/
     stroke-dasharray: 10, 10;
-    animation: flow 1s linear infinite;
-    -webkit-animation: flow 1s linear infinite;
+    animation: flow1 1s linear infinite;
+    -webkit-animation: flow1 1s linear infinite;
 }
 
-@keyframes flow {
+@keyframes flow1 {
     from {
         stroke-dashoffset: 20;
     }
@@ -45,13 +45,43 @@
     }
 }
 
-@-webkit-keyframes flow {
+@-webkit-keyframes flow1 {
     from {
         stroke-dashoffset: 20;
     }
 
     to {
         stroke-dashoffset: 0;
+    }
+}
+
+.flowlineSpur2 {
+    fill: none;
+    stroke: blue;
+    opacity: 0.5;
+    /*stroke-width: 4;*/
+    stroke-dasharray: 10, 10;
+    animation: flow2 1s linear infinite;
+    -webkit-animation: flow2 1s linear infinite;
+}
+
+@keyframes flow2 {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: 20;
+    }
+}
+
+@-webkit-keyframes flow2 {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: 20;
     }
 }
 

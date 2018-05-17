@@ -1,5 +1,6 @@
 $(document).ready(function () {
-    let trafType = ($('input[type=radio][name=type]').val());
+    trafType = ($('input[type=radio][name=type]').val());
+    lane = $('input[type=radio][name=lane]').val();
 
     $('.tabs').tabs();
     document.getElementById("datePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
@@ -15,33 +16,40 @@ $(document).ready(function () {
     };
 
     $('input[type=radio][name=type]').change(function () {
-        console.log('change');
-        let date = getDateFromYearDay(document.getElementById('dateSlider').value);
-        let hour = getHourFromSeconds(document.getElementById('timeSlider').value);
         trafType = this.value;
-        console.log(this.value);
+        startDrawingFromType();
 
-        switch (this.value) {
-            case 'Personenwagen':
-                drawPaths('./basel_moto.geojson', pwData, trafType);
-                selectedData = pwData;
-                //drawPathsWithTrafficData(pwData, date, hour, trafType);
-                break;
-            case 'Velofahrer':
-                drawPaths('./streets.json', veloData, trafType);
-                selectedData = veloData;
-                //drawPathsWithTrafficData(veloData, date, hour, trafType);
-                break;
-            case 'Busse':
-                drawPaths('./basel_moto.geojson', busData, trafType);
-                selectedData = busData;
-                //drawPathsWithTrafficData(busData, date, hour, trafType);
-                break;
-            // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
-        }
+    });
+
+    $('input[type=radio][name=lane]').change(function() {
+        lane = this.value;
+        console.log(lane);
+        startDrawingFromType();
+
     });
 
 });
+
+function startDrawingFromType(){
+    switch (trafType) {
+        case 'Personenwagen':
+            drawPaths('./basel_moto.geojson', pwData, trafType);
+            selectedData = pwData;
+            //drawPathsWithTrafficData(pwData, date, hour, trafType);
+            break;
+        case 'Velofahrer':
+            drawPaths('./streets.json', veloData, trafType);
+            selectedData = veloData;
+            //drawPathsWithTrafficData(veloData, date, hour, trafType);
+            break;
+        case 'Busse':
+            drawPaths('./basel_moto.geojson', busData, trafType);
+            selectedData = busData;
+            //drawPathsWithTrafficData(busData, date, hour, trafType);
+            break;
+        // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
+    }
+}
 
 //accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
 function getDateFromYearDay(yearDay) {
@@ -89,6 +97,8 @@ let veloData;
 let busData;
 let pwData;
 let selectedData;
+let trafType;
+let lane;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
@@ -200,7 +210,7 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
                 })
                 .style("opacity", 0.5)
                 .attr("stroke", "black")
-                .attr("class", 'flowline')
+                .attr("class", `flowline${lane}`)
                 // .attr('stroke-width', 4.5)
                 .attr("pointer-events", "visible");
 
@@ -244,7 +254,12 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
     console.log(drawData);
 
     drawData.forEach((el) => {
-        console.log(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
+        if(el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane){
+            console.log(el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length));
+            console.log(lane);
+            return;
+        }
+        console.log(`#path-${el.Strassenname.slice(el.Strassenname.length - 5, el.Strassenname.length)}`);
         domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
         if (domEl) {
             console.log(`${date} ${time}`);
