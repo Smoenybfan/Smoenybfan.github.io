@@ -222,7 +222,7 @@ readPwData();
 
 
 //this is the start data, therefore display it
-d3.csv('./VisualisierungVerkehrsdatenBasel/jedes_excel_isch_a_hueresohn.csv', (querriedVeloData) => {
+d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
     veloData = querriedVeloData;
     selectedData = veloData;
     drawPaths('./streets.json', veloData, 'Velofahrer');

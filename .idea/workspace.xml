@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="91f65548-1f7f-479e-9146-bfb917caab15" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/test.csv" afterPath="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/test.csv" />
+      <change beforePath="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/PW_transponiert.xlsx" afterPath="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/PW_transponiert.xlsx" />
+      <change beforePath="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/Total_Motorisiert_transponiert.xlsx" afterPath="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/Total_Motorisiert_transponiert.xlsx" />
       <change beforePath="$PROJECT_DIR$/scripts.js" afterPath="$PROJECT_DIR$/scripts.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -17,17 +18,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="scripts.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="scripts.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1989">
-              <caret line="228" column="6" lean-forward="false" selection-start-line="228" selection-start-column="6" selection-end-line="228" selection-end-column="6" />
+            <state relative-caret-position="317">
+              <caret line="328" column="55" lean-forward="false" selection-start-line="328" selection-start-column="12" selection-end-line="328" selection-end-column="55" />
               <folding>
-                <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-                <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-                <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-                <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+                <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+                <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+                <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+                <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pw.csv" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/pw.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="91">
+              <caret line="3" column="24753" lean-forward="false" selection-start-line="3" selection-start-column="24753" selection-end-line="3" selection-end-column="24753" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="total_motorisiert_transponiert.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/total_motorisiert_transponiert.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="244">
+              <caret line="48" column="11871" lean-forward="false" selection-start-line="48" selection-start-column="11871" selection-end-line="48" selection-end-column="11871" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -66,7 +87,7 @@
         <entry file="file://$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/test.csv">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="125">
-              <caret line="10" column="17053" lean-forward="true" selection-start-line="10" selection-start-column="17053" selection-end-line="10" selection-end-column="17053" />
+              <caret line="10" column="17053" lean-forward="false" selection-start-line="10" selection-start-column="17053" selection-end-line="10" selection-end-column="17053" />
               <folding />
             </state>
           </provider>
@@ -126,19 +147,21 @@
       <find>data</find>
       <find>attr</find>
       <find>ü</find>
-      <find>;</find>
-      <find />
       <find>Spur8</find>
+      <find />
+      <find>Spur</find>
+      <find>;</find>
+      <find>huere</find>
     </findStrings>
     <replaceStrings>
       <replace />
-      <replace>u</replace>
       <replace>,u</replace>
       <replace>a</replace>
-      <replace>,</replace>
       <replace>A</replace>
       <replace>Spur1</replace>
       <replace>Spur2</replace>
+      <replace>,</replace>
+      <replace>u</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -159,7 +182,9 @@
         <option value="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/velodaten_transponiert.csv" />
         <option value="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/jedes_excel_isch_a_hueresohn.csv" />
         <option value="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/test.csv" />
+        <option value="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/total_motorisiert_transponiert.csv" />
         <option value="$PROJECT_DIR$/scripts.js" />
+        <option value="$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/pw.csv" />
       </list>
     </option>
   </component>
@@ -307,12 +332,12 @@
       <workItem from="1526493302964" duration="1000" />
       <workItem from="1526493316246" duration="6214000" />
       <workItem from="1526555937862" duration="4318000" />
-      <workItem from="1526573052475" duration="922000" />
+      <workItem from="1526573052475" duration="1403000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="58142000" />
+    <option name="totallyTimeSpent" value="58623000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -348,26 +373,15 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="66" lean-forward="true" selection-start-line="8" selection-start-column="66" selection-end-line="8" selection-end-column="66" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/d3-geo-projection/README.md" />
     <entry file="file://$PROJECT_DIR$/scripts.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -414,10 +428,10 @@
         <state relative-caret-position="17">
           <caret line="27" column="29" lean-forward="false" selection-start-line="27" selection-start-column="22" selection-end-line="27" selection-end-column="29" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -427,10 +441,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -477,10 +491,10 @@
         <state relative-caret-position="17">
           <caret line="27" column="29" lean-forward="false" selection-start-line="27" selection-start-column="22" selection-end-line="27" selection-end-column="29" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -490,10 +504,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -528,10 +542,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -559,10 +573,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
         </state>
       </provider>
@@ -666,21 +680,37 @@
     <entry file="file://$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/test.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="125">
-          <caret line="10" column="17053" lean-forward="true" selection-start-line="10" selection-start-column="17053" selection-end-line="10" selection-end-column="17053" />
+          <caret line="10" column="17053" lean-forward="false" selection-start-line="10" selection-start-column="17053" selection-end-line="10" selection-end-column="17053" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/total_motorisiert_transponiert.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="48" column="11871" lean-forward="false" selection-start-line="48" selection-start-column="11871" selection-end-line="48" selection-end-column="11871" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1989">
-          <caret line="228" column="6" lean-forward="false" selection-start-line="228" selection-start-column="6" selection-end-line="228" selection-end-column="6" />
+        <state relative-caret-position="317">
+          <caret line="328" column="55" lean-forward="false" selection-start-line="328" selection-start-column="12" selection-end-line="328" selection-end-column="55" />
           <folding>
-            <marker date="1526575503562" expanded="true" signature="206:223" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="467:484" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="789:806" ph="..." />
-            <marker date="1526575503562" expanded="true" signature="1051:1068" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="206:223" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="467:484" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="789:806" ph="..." />
+            <marker date="1526575836126" expanded="true" signature="1051:1068" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VisualisierungVerkehrsdatenBasel/pw.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="91">
+          <caret line="3" column="24753" lean-forward="false" selection-start-line="3" selection-start-column="24753" selection-end-line="3" selection-end-column="24753" />
+          <folding />
         </state>
       </provider>
     </entry>
