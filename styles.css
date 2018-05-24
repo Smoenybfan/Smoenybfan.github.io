@@ -27,7 +27,7 @@
 
 .flowlineSpur1 {
     fill: none;
-    stroke: blue;
+    /*stroke: blue;*/
     opacity: 0.5;
     /*stroke-width: 4;*/
     stroke-dasharray: 10, 10;
@@ -57,7 +57,7 @@
 
 .flowlineSpur2 {
     fill: none;
-    stroke: blue;
+    /*stroke: blue;*/
     opacity: 0.5;
     /*stroke-width: 4;*/
     stroke-dasharray: 10, 10;

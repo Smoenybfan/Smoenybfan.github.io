@@ -27,23 +27,41 @@ $(document).ready(function () {
         startDrawingFromType();
 
     });
+    readBusData(readPwData);
+    // readPwData();
+
+
+
+    // startDrawingFromType();
 
 });
+
+function readVeloData(callback){
+    d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
+        veloData = querriedVeloData;
+        selectedData = veloData;
+        // drawPaths('./streets.json', veloData, 'Velofahrer');
+        //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
+        if(callback){
+            callback.call(null, startDrawingFromType);
+        }
+    });
+}
 
 function startDrawingFromType(){
     switch (trafType) {
         case 'Personenwagen':
-            drawPaths('./basel_moto.geojson', pwData, trafType);
+            drawPaths('./basel_moto.geojson', pwData, trafType, "blue");
             selectedData = pwData;
             //drawPathsWithTrafficData(pwData, date, hour, trafType);
             break;
         case 'Velofahrer':
-            drawPaths('./streets.json', veloData, trafType);
+            drawPaths('./streets.json', veloData, trafType, "purple");
             selectedData = veloData;
             //drawPathsWithTrafficData(veloData, date, hour, trafType);
             break;
         case 'Busse':
-            drawPaths('./basel_moto.geojson', busData, trafType);
+            drawPaths('./basel_moto.geojson', busData, trafType, "#C71585");
             selectedData = busData;
             //drawPathsWithTrafficData(busData, date, hour, trafType);
             break;
@@ -124,7 +142,7 @@ function projectPoint(x, y) {
 
 //we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
 //inside here or be called from inside here.
-function drawPaths(streetsFilePath, drawData, verkehrsart) {
+function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     d3.json(streetsFilePath, (basel) => {
         data = basel;
         console.log(basel);
@@ -157,7 +175,7 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
                 return 'path-' + d.properties.Strassenname;
             })
             .style("opacity", 0.5)
-            .attr("stroke", "black")
+            .attr("stroke", color)
             .attr("class", 'flowline')
             // .attr('stroke-width', 4.5)
             .attr("pointer-events", "visible");
@@ -209,7 +227,7 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
                     return 'path-' + d.properties.Strassenname;
                 })
                 .style("opacity", 0.5)
-                .attr("stroke", "black")
+                .attr("stroke", color)
                 .attr("class", `flowline${lane}`)
                 // .attr('stroke-width', 4.5)
                 .attr("pointer-events", "visible");
@@ -227,17 +245,11 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
 }
 
 
-readBusData();
-readPwData();
+
 
 
 //this is the start data, therefore display it
-d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
-    veloData = querriedVeloData;
-    selectedData = veloData;
-    drawPaths('./streets.json', veloData, 'Velofahrer');
-    //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
-});
+
 
 function drawPathsWithTrafficData(drawData, date, time, name) {
     let maxCount = 0;
@@ -294,61 +306,25 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
     })
 }
 
-/*
-function drawPathsWithAllTrafficData(date, time){
 
-    let maxCount = 0;
 
-    veloData.forEach(el => {
-        Object.values(el).forEach(value => {
-            if (!isNaN(value) && +value > maxCount) {
-                console.log(value);
-                maxCount = +value;
-            }
-        })
-    });
-    let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
-
-    veloData.forEach((el) => {
-        domEl = d3.select(`#path-${el.Strassenname}`);
-        if (domEl) {
-
-            if (+el[`${date} ${time}`] <= 0) {
-                domEl.attr('stroke-width', 0);
-            } else {
-                domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
-            }
-            domEl
-                .on("mouseover", (d) => {
-                    clearTimeout(divTimeoutHandle);
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html(el[`${date} ${time}`] + " Radfahrer")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                })
-                .on("mouseout", (d) => {
-                    divTimeoutHandle = setTimeout(() => {
-                        div.transition()
-                            .duration(200)
-                            .style('opacity', 0);
-                    }, 3000)
-                });
-        }
-    })
-}
-*/
-
-function readBusData() {
+function readBusData(callback) {
     d3.csv('./VisualisierungVerkehrsdatenBasel/bus.csv', (readData) => {
         busData = readData;
+        if(callback){
+            callback.call(undefined, readVeloData);
+        }
     });
+
+
 }
 
-function readPwData() {
+function readPwData(callback) {
     d3.csv('./VisualisierungVerkehrsdatenBasel/pw.csv', (readData) => {
         pwData = readData;
+        if(callback){
+            callback.call(undefined, startDrawingFromType);
+        }
     })
 }
 
