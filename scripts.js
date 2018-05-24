@@ -51,17 +51,17 @@ function readVeloData(callback){
 function startDrawingFromType(){
     switch (trafType) {
         case 'Personenwagen':
-            drawPaths('./basel_moto.geojson', pwData, trafType, "blue");
+            drawPaths('./basel_moto.geojson', pwData, trafType, "#4B0082");
             selectedData = pwData;
             //drawPathsWithTrafficData(pwData, date, hour, trafType);
             break;
         case 'Velofahrer':
-            drawPaths('./streets.json', veloData, trafType, "purple");
+            drawPaths('./streets.json', veloData, trafType, "#C71585");
             selectedData = veloData;
             //drawPathsWithTrafficData(veloData, date, hour, trafType);
             break;
         case 'Busse':
-            drawPaths('./basel_moto.geojson', busData, trafType, "#C71585");
+            drawPaths('./basel_moto.geojson', busData, trafType, "#800080");
             selectedData = busData;
             //drawPathsWithTrafficData(busData, date, hour, trafType);
             break;
