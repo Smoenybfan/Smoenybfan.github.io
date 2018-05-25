@@ -27,6 +27,7 @@ $(document).ready(function () {
         startDrawingFromType();
 
     });
+
     readBusData(readPwData);
     // readPwData();
 
@@ -34,15 +35,34 @@ $(document).ready(function () {
 
     // startDrawingFromType();
 
-    initTempSlider()
+    initTempSlider();
+    initRainSlider();
 
 });
+
+function tempCheckBoxClicked(){
+    tempEnabled = !tempEnabled;
+    if(document.getElementById('tempSlider').getAttribute('disabled')){
+        document.getElementById('tempSlider').removeAttribute('disabled');
+    } else {
+        document.getElementById('tempSlider').setAttribute('disabled', 'true');
+    }
+}
+
+function rainCheckBoxClicked(){
+    rainEnabled = !rainEnabled;
+    if(document.getElementById('rainSlider').getAttribute('disabled')){
+        document.getElementById('rainSlider').removeAttribute('disabled');
+    } else {
+        document.getElementById('rainSlider').setAttribute('disabled', 'true');
+    }
+}
 
 function initTempSlider(){
     let slider = document.getElementById('tempSlider');
     noUiSlider.create(slider, {
         start: [-10, 40],
-        tooltips: [wNumb({decimals: 1}), true],
+        tooltips: [wNumb({decimals: 1, suffix: ' &deg;C'}), wNumb({decimals: 1, suffix: ' &deg;C'})],
         connect: true,
         step: 0.1,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
@@ -55,6 +75,25 @@ function initTempSlider(){
         })
     });
 }
+
+function initRainSlider(){
+    let slider = document.getElementById('rainSlider');
+    noUiSlider.create(slider, {
+        start: [0, 400],
+        tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
+        connect: true,
+        step: 5,
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+            'min': 0,
+            'max': 400
+        },
+        format: wNumb({
+            decimals: 0
+        })
+    });
+}
+
 function readVeloData(callback){
     d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
         veloData = querriedVeloData;
@@ -137,6 +176,8 @@ let pwData;
 let selectedData;
 let trafType;
 let lane;
+let tempEnabled = false;
+let rainEnabled = false;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
