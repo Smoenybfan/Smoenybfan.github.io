@@ -28,7 +28,27 @@ $(document).ready(function () {
 
     });
 
+    initTempSlider()
+
 });
+
+function initTempSlider(){
+    let slider = document.getElementById('tempSlider');
+    noUiSlider.create(slider, {
+        start: [-10, 40],
+        tooltips: [wNumb({ decimals: 1 }), true ],
+        connect: true,
+        step: 0.1,
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+            'min': -10,
+            'max': 40
+        },
+        format: wNumb({
+            decimals: 0
+        })
+    });
+}
 
 function startDrawingFromType(){
     switch (trafType) {

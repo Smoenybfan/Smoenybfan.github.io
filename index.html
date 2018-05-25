@@ -20,6 +20,11 @@
     <link rel="stylesheet" href="materialize/css/materialize.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!--NoUISlider stylesheet and script -->
+    <script src="noUiSlider.11.1.0/nouislider.js"></script>
+    <link rel="stylesheet" href="noUiSlider.11.1.0/nouislider.css">
+    <script src="wnumb-1.1.0/wnumb-1.1.0/wNumb.js"></script>
+
     <!--Leaflet stylesheets and scripts-->
     <script src="leaflet/leaflet.js"></script>
     <script src="Leaflet.D3SvgOverlay-master/Leaflet.D3SvgOverlay-master/L.D3SvgOverlay.js"></script>
@@ -69,7 +74,8 @@
                     </p>
                 </form>
             </div>
-        </div><div class="card">
+        </div>
+        <div class="card">
             <div class="container" style="padding-bottom: 5px; padding-top: 1px;">
                 <h4>Spuren</h4>
                 <form>
@@ -78,6 +84,22 @@
                             <input value="Spur1" class="with-gap" name="lane" type="radio" checked/>
                             <span ><i class="material-icons">navigation</i> Spur 1</span>
                         </label>
+                    </p>
+                    <p>
+                        <label>
+                            <input value="Spur2" class="with-gap" name="lane" type="radio"/>
+                            <span><i class="material-icons">near_me</i> Spur 2</span>
+                        </label>
+                    </p>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="container" style="padding-bottom: 5px; padding-top: 1px;">
+                <h4>Spuren</h4>
+                <form>
+                    <p>
+                        <div id="tempSlider" style="margin-top: 55px"></div>
                     </p>
                     <p>
                         <label>
