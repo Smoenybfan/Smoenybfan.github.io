@@ -20,6 +20,11 @@
     <link rel="stylesheet" href="materialize/css/materialize.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <!--NoUISlider stylesheet and script -->
+    <script src="noUiSlider.11.1.0/nouislider.js"></script>
+    <link rel="stylesheet" href="noUiSlider.11.1.0/nouislider.css">
+    <script src="wnumb-1.1.0/wnumb-1.1.0/wNumb.js"></script>
+
     <!--Leaflet stylesheets and scripts-->
     <script src="leaflet/leaflet.js"></script>
     <script src="Leaflet.D3SvgOverlay-master/Leaflet.D3SvgOverlay-master/L.D3SvgOverlay.js"></script>
@@ -31,14 +36,14 @@
 <body>
 <nav>
     <div class="nav-wrapper  teal darken-2">
-        <a href="#" class="brand-logo" style="margin-left: 10px">Verkehrszähldaten Visualisierung 2018</a>
+        <a href="#" class="brand-logo" style="margin-left: 20px">Verkehrszähldaten Visualisierung 2018</a>
         <ul id="nav-mobil" class="right hid-on-med-and-down">
             <!--<li><a href="#">Nowhere</a> </li>-->
         </ul>
     </div>
 </nav>
 <div class="row" style="margin-top: 20px">
-    <div class="col s2">
+    <div class="col s3">
         <div class="card">
             <div class="container" style="padding-bottom: 5px; padding-top: 1px;">
                 <h4>Verkehrsart</h4>
@@ -46,7 +51,7 @@
                     <p>
                         <label>
                             <input value="Velofahrer" class="with-gap" name="type" type="radio" checked/>
-                            <span ><i class="material-icons">directions_bike</i> Velo</span>
+                            <span><i class="material-icons">directions_bike</i> Velo</span>
                         </label>
                     </p>
                     <p>
@@ -61,22 +66,23 @@
                             <span><i class="material-icons">directions_car</i> Personenwagen</span>
                         </label>
                     </p>
-                    <p>
-                        <label>
-                            <input value="all" class="with-gap" name="type" type="radio"/>
-                            <span><i class="material-icons">traffic</i> Alle</span>
-                        </label>
-                    </p>
+                    <!--<p>-->
+                        <!--<label>-->
+                            <!--<input value="all" class="with-gap" name="type" type="radio"/>-->
+                            <!--<span><i class="material-icons">traffic</i> Alle</span>-->
+                        <!--</label>-->
+                    <!--</p>-->
                 </form>
             </div>
-        </div><div class="card">
+        </div>
+        <div class="card">
             <div class="container" style="padding-bottom: 5px; padding-top: 1px;">
                 <h4>Spuren</h4>
                 <form>
                     <p>
                         <label>
                             <input value="Spur1" class="with-gap" name="lane" type="radio" checked/>
-                            <span ><i class="material-icons">navigation</i> Spur 1</span>
+                            <span><i class="material-icons">navigation</i> Spur 1</span>
                         </label>
                     </p>
                     <p>
@@ -85,6 +91,33 @@
                             <span><i class="material-icons">near_me</i> Spur 2</span>
                         </label>
                     </p>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="container" style="padding-bottom: 5px; padding-top: 1px;">
+                <h4>Wetter</h4>
+                <form>
+                    <p>
+                        <div id="tempSlider" style="margin-top: 55px" disabled="true"></div>
+                    </p>
+                    <p>
+                        <label>
+                            <input type="checkbox" onclick="tempCheckBoxClicked()"/>
+                            <span>Enable/Disable Temperature</span>
+                        </label>
+                    </p>
+
+                    <p>
+                        <div id="rainSlider" style="margin-top: 55px" disabled="true"></div>
+                    </p>
+                    <p>
+                        <label>
+                            <input type="checkbox" onclick="rainCheckBoxClicked()"/>
+                            <span>Enable/Disable Niederschlagsmenge</span>
+                        </label>
+                    </p>
+
                 </form>
             </div>
         </div>
@@ -142,11 +175,11 @@
                     We like Open Data.
                 </div>
                 <div id="tab1">
-                    We used D3, Leaflet and Materialize.
-                    We used D3, Leaflet and Materialize.
-                    We used D3, Leaflet and Materialize.
-                    We used D3, Leaflet and Materialize.
-                    We used D3, Leaflet and Materialize.
+                    We used D3, Leaflet and Materialize.<br/>
+                    We used D3, Leaflet and Materialize.<br/>
+                    We used D3, Leaflet and Materialize.<br/>
+                    We used D3, Leaflet and Materialize.<br/>
+                    We used D3, Leaflet and Materialize.<br/>
                 </div>
             </div>
         </div>

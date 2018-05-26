@@ -21,29 +21,109 @@ $(document).ready(function () {
 
     });
 
-    $('input[type=radio][name=lane]').change(function() {
+    $('input[type=radio][name=lane]').change(function () {
         lane = this.value;
         console.log(lane);
         startDrawingFromType();
 
     });
 
+    readBusData(readPwData);
+    // readPwData();
+
+
+    // startDrawingFromType();
+
+    initTempSlider();
+    initRainSlider();
+
+    document.getElementById('tempSlider').noUiSlider.on('change', () => startDrawingFromType());
+    document.getElementById('rainSlider').noUiSlider.on('change', () => startDrawingFromType());
+
 });
 
-function startDrawingFromType(){
+function tempCheckBoxClicked() {
+    tempEnabled = !tempEnabled;
+    if (document.getElementById('tempSlider').getAttribute('disabled')) {
+        document.getElementById('tempSlider').removeAttribute('disabled');
+    } else {
+        document.getElementById('tempSlider').setAttribute('disabled', 'true');
+    }
+    startDrawingFromType();
+}
+
+function rainCheckBoxClicked() {
+    rainEnabled = !rainEnabled;
+    if (document.getElementById('rainSlider').getAttribute('disabled')) {
+        document.getElementById('rainSlider').removeAttribute('disabled');
+    } else {
+        document.getElementById('rainSlider').setAttribute('disabled', 'true');
+    }
+}
+
+function initTempSlider() {
+    let slider = document.getElementById('tempSlider');
+    noUiSlider.create(slider, {
+        start: [-10, 40],
+        tooltips: [wNumb({decimals: 1, suffix: ' &deg;C'}), wNumb({decimals: 1, suffix: ' &deg;C'})],
+        connect: true,
+        step: 0.1,
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+            'min': -10,
+            'max': 40
+        },
+        format: wNumb({
+            decimals: 0
+        })
+    });
+}
+
+function initRainSlider() {
+    let slider = document.getElementById('rainSlider');
+    noUiSlider.create(slider, {
+        start: [0, 400],
+        tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
+        connect: true,
+        step: 5,
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+            'min': 0,
+            'max': 400
+        },
+        format: wNumb({
+            decimals: 0
+        })
+    });
+}
+
+function readVeloData(callback) {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
+        veloData = querriedVeloData;
+        selectedData = veloData;
+        // drawPaths('./streets.json', veloData, 'Velofahrer');
+        //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
+        if (callback) {
+            callback.call(null, startDrawingFromType);
+        }
+
+    });
+}
+
+function startDrawingFromType() {
     switch (trafType) {
         case 'Personenwagen':
-            drawPaths('./basel_moto.geojson', pwData, trafType);
+            drawPaths('./basel_moto.geojson', pwData, trafType, "#4B0082");
             selectedData = pwData;
             //drawPathsWithTrafficData(pwData, date, hour, trafType);
             break;
         case 'Velofahrer':
-            drawPaths('./streets.json', veloData, trafType);
+            drawPaths('./streets.json', veloData, trafType, "#C71585");
             selectedData = veloData;
             //drawPathsWithTrafficData(veloData, date, hour, trafType);
             break;
         case 'Busse':
-            drawPaths('./basel_moto.geojson', busData, trafType);
+            drawPaths('./basel_moto.geojson', busData, trafType, "#800080");
             selectedData = busData;
             //drawPathsWithTrafficData(busData, date, hour, trafType);
             break;
@@ -99,6 +179,8 @@ let pwData;
 let selectedData;
 let trafType;
 let lane;
+let tempEnabled = false;
+let rainEnabled = false;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
@@ -124,7 +206,7 @@ function projectPoint(x, y) {
 
 //we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
 //inside here or be called from inside here.
-function drawPaths(streetsFilePath, drawData, verkehrsart) {
+function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     d3.json(streetsFilePath, (basel) => {
         data = basel;
         console.log(basel);
@@ -157,7 +239,7 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
                 return 'path-' + d.properties.Strassenname;
             })
             .style("opacity", 0.5)
-            .attr("stroke", "black")
+            .attr("stroke", color)
             .attr("class", 'flowline')
             // .attr('stroke-width', 4.5)
             .attr("pointer-events", "visible");
@@ -209,7 +291,7 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
                     return 'path-' + d.properties.Strassenname;
                 })
                 .style("opacity", 0.5)
-                .attr("stroke", "black")
+                .attr("stroke", color)
                 .attr("class", `flowline${lane}`)
                 // .attr('stroke-width', 4.5)
                 .attr("pointer-events", "visible");
@@ -221,23 +303,106 @@ function drawPaths(streetsFilePath, drawData, verkehrsart) {
 
         }
 
-        drawPathsWithTrafficData(drawData,getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), verkehrsart )
+        if (tempEnabled || rainEnabled) {
+
+            drawPathsWithWeatherData(drawData, verkehrsart);
+        } else {
+
+            drawPathsWithTrafficData(drawData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), verkehrsart)
+        }
 
     });
 }
 
+function sumDays(filtered) {
+    let sum = 0;
 
-readBusData();
-readPwData();
+    for (var i = 0; i < filtered.length; i++) {
+        sum += +filtered[i];
+    }
+
+    return sum/filtered.length;
+}
+
+function drawPathsWithWeatherData(drawData, name) {
+    tempVals = document.getElementById('tempSlider').noUiSlider.get();
+    rainVals = document.getElementById('rainSlider').noUiSlider.get();
+
+    weatherData = drawData.slice(drawData.length - 2, drawData.length);
+
+    drawArray = [];
+
+    drawData.forEach(street => {
+        if (rainEnabled) {
+            street.keys().forEach(dateTime => {
+                if (+(weatherData[1][dateTime]) < rainVals[0] || +(weatherData[1][dateTime] > rainVals[1])) {
+                    delete street[dateTime];
+                }
+            });
+        }
+
+        if (tempEnabled) {
+            Object.keys(street).forEach(dateTime => {
+                if (+weatherData[0][dateTime] < tempVals[0] || +weatherData[0][dateTime] > tempVals[1]) {
+                    delete street[dateTime];
+                }
+            });
+        }
+
+
+    });
+
+    let maxCount = 0;
+    drawData.forEach(el => {
+        Object.values(el).forEach(value => {
+            if (!isNaN(value) && +value > maxCount) {
+                console.log(value);
+                maxCount = +value;
+            }
+        });
+
+        console.log(Object.values(el).length);
+    });
+
+
+    let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
+
+    drawData.forEach((el) => {
+
+        if (el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane) {
+            return;
+        }
+
+        domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
+        if (domEl) {
+            let vals = Object.values(el);
+            vals = vals.slice(1, vals.length);
+            domEl.style('stroke-width', scale(sumDays(vals)));
+
+            domEl
+                .on("mouseover", (d) => {
+                    clearTimeout(divTimeoutHandle);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html(sumDays(vals) + ' ' + name)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", (d) => {
+                    divTimeoutHandle = setTimeout(() => {
+                        div.transition()
+                            .duration(200)
+                            .style('opacity', 0);
+                    }, 3000)
+                });
+        }
+    })
+}
 
 
 //this is the start data, therefore display it
-d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
-    veloData = querriedVeloData;
-    selectedData = veloData;
-    drawPaths('./streets.json', veloData, 'Velofahrer');
-    //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
-});
+
 
 function drawPathsWithTrafficData(drawData, date, time, name) {
     let maxCount = 0;
@@ -251,26 +416,19 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
         })
     });
     let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
-    console.log(drawData);
+    console.log(drawData.slice(drawData.length - 2, drawData.length));
 
     drawData.forEach((el) => {
-        if(el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane){
-            console.log(el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length));
-            console.log(lane);
+        if (el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane) {
             return;
         }
         console.log(`#path-${el.Strassenname.slice(el.Strassenname.length - 5, el.Strassenname.length)}`);
         domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
         if (domEl) {
-            console.log(`${date} ${time}`);
             if (+el[`${date} ${time}`] <= 0) {
                 domEl.style('stroke-width', 0);
             } else {
-                //console.log(domEl.style('stroke-width'));
-                console.log(scale(+el[`${date} ${time}`]));
-                console.log(domEl);
                 domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
-                console.log(domEl);
             }
             domEl
                 .on("mouseover", (d) => {
@@ -278,7 +436,6 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    console.log(name);
                     div.html(el[`${date} ${time}`] + ' ' + name)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
@@ -294,61 +451,24 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
     })
 }
 
-/*
-function drawPathsWithAllTrafficData(date, time){
 
-    let maxCount = 0;
-
-    veloData.forEach(el => {
-        Object.values(el).forEach(value => {
-            if (!isNaN(value) && +value > maxCount) {
-                console.log(value);
-                maxCount = +value;
-            }
-        })
-    });
-    let scale = d3.scaleLog().base(2).domain([1, maxCount/10]).range([0, 15]);
-
-    veloData.forEach((el) => {
-        domEl = d3.select(`#path-${el.Strassenname}`);
-        if (domEl) {
-
-            if (+el[`${date} ${time}`] <= 0) {
-                domEl.attr('stroke-width', 0);
-            } else {
-                domEl.attr('stroke-width', scale(+el[`${date} ${time}`]));
-            }
-            domEl
-                .on("mouseover", (d) => {
-                    clearTimeout(divTimeoutHandle);
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html(el[`${date} ${time}`] + " Radfahrer")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                })
-                .on("mouseout", (d) => {
-                    divTimeoutHandle = setTimeout(() => {
-                        div.transition()
-                            .duration(200)
-                            .style('opacity', 0);
-                    }, 3000)
-                });
-        }
-    })
-}
-*/
-
-function readBusData() {
+function readBusData(callback) {
     d3.csv('./VisualisierungVerkehrsdatenBasel/bus.csv', (readData) => {
         busData = readData;
+        if (callback) {
+            callback.call(undefined, readVeloData);
+        }
     });
+
+
 }
 
-function readPwData() {
+function readPwData(callback) {
     d3.csv('./VisualisierungVerkehrsdatenBasel/pw.csv', (readData) => {
         pwData = readData;
+        if (callback) {
+            callback.call(undefined, startDrawingFromType);
+        }
     })
 }
 
