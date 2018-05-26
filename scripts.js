@@ -82,14 +82,14 @@ function initTempSlider() {
 function initRainSlider() {
     let slider = document.getElementById('rainSlider');
     noUiSlider.create(slider, {
-        start: [0, 400],
+        start: [0, 1],
         tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
         connect: true,
-        step: 5,
+        step: 0.1,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
             'min': 0,
-            'max': 400
+            'max': 1
         },
         format: wNumb({
             decimals: 0
@@ -314,54 +314,80 @@ function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     });
 }
 
-function sumDays(filtered) {
-    let sum = 0;
 
-    for (var i = 0; i < filtered.length; i++) {
-        sum += +filtered[i];
+function sumAndFilterDrawData(drawData, allowedDateTimes) {
+    let summedObj = {};
+    for(let i = 0; i < drawData.length; i++ ){
+        let streetname = drawData[i].Strassenname.substring(0, drawData[i].Strassenname.length - 5);
+        summedObj[drawData[i].Strassenname] = 0;
+        if (drawData[i].Strassenname.substring(drawData[i].Strassenname.length - 5, drawData[i].Strassenname.length) != lane) {
+            continue;
+        }
+        for(let key in drawData[i]){
+            if(allowedDateTimes.includes(key)){
+                if(!isNaN(drawData[i][key])){
+                    summedObj[drawData[i].Strassenname] += +drawData[i][key];
+                }
+            }
+        }
+
+        summedObj[drawData[i].Strassenname] /= allowedDateTimes.length;
     }
 
-    return sum/filtered.length;
+    return summedObj;
 }
 
 function drawPathsWithWeatherData(drawData, name) {
-    tempVals = document.getElementById('tempSlider').noUiSlider.get();
-    rainVals = document.getElementById('rainSlider').noUiSlider.get();
+    let tempVals = document.getElementById('tempSlider').noUiSlider.get();
+    let rainVals = document.getElementById('rainSlider').noUiSlider.get();
 
-    weatherData = drawData.slice(drawData.length - 2, drawData.length);
+    let weatherData = drawData.slice(drawData.length - 2, drawData.length);
+    let rainData = weatherData[1];
+    let tempData = weatherData[0];
 
-    drawArray = [];
+    console.log(Object.values(tempData).map(el => +el));
+    console.log(drawData);
 
-    drawData.forEach(street => {
-        if (rainEnabled) {
-            street.keys().forEach(dateTime => {
-                if (+(weatherData[1][dateTime]) < rainVals[0] || +(weatherData[1][dateTime] > rainVals[1])) {
-                    delete street[dateTime];
-                }
-            });
-        }
-
-        if (tempEnabled) {
-            Object.keys(street).forEach(dateTime => {
-                if (+weatherData[0][dateTime] < tempVals[0] || +weatherData[0][dateTime] > tempVals[1]) {
-                    delete street[dateTime];
-                }
-            });
-        }
+    let allowedDateTimes = Object.keys(drawData[0]);
+    allowedDateTimes = allowedDateTimes.slice(0, allowedDateTimes.length);
 
 
-    });
+    let street = drawData[0];
+    console.log(rainData);
+    console.log(+rainData["31.12.2017 23:00 - 00:00"]);
+    console.log(allowedDateTimes.findIndex(el => el === "31.12.2017 23:00 - 00:00"));
+    if (rainEnabled) {
+        Object.keys(street).forEach(dateTime => {
+            if (+rainData[dateTime] < rainVals[0] || +rainData[dateTime] > rainVals[1]) {
+                // console.log(dateTime);
+                allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+            }
+        });
+    }
+    // console.log(Object.keys(street));
+    if (tempEnabled) {
+        Object.keys(street).forEach(dateTime => {
+            // console.log(+tempData[dateTime]);
+            if (+tempData[dateTime] < tempVals[0] || +tempData[dateTime] > tempVals[1]) {
+                // console.log(dateTime);
+                allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+            }
+        });
+    }
+
+    console.log(allowedDateTimes);
+
+    let summedObj = sumAndFilterDrawData(drawData, allowedDateTimes);
+
+    console.log(summedObj);
 
     let maxCount = 0;
     drawData.forEach(el => {
         Object.values(el).forEach(value => {
             if (!isNaN(value) && +value > maxCount) {
-                console.log(value);
                 maxCount = +value;
             }
-        });
-
-        console.log(Object.values(el).length);
+        })
     });
 
 
@@ -375,9 +401,7 @@ function drawPathsWithWeatherData(drawData, name) {
 
         domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
         if (domEl) {
-            let vals = Object.values(el);
-            vals = vals.slice(1, vals.length);
-            domEl.style('stroke-width', scale(sumDays(vals)));
+            domEl.style('stroke-width', scale(summedObj[el.Strassenname]));
 
             domEl
                 .on("mouseover", (d) => {
@@ -385,7 +409,7 @@ function drawPathsWithWeatherData(drawData, name) {
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    div.html(sumDays(vals) + ' ' + name)
+                    div.html(Math.round(summedObj[el.Strassenname]) + ' ' + name)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -410,7 +434,6 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
     drawData.forEach(el => {
         Object.values(el).forEach(value => {
             if (!isNaN(value) && +value > maxCount) {
-                console.log(value);
                 maxCount = +value;
             }
         })
