@@ -1,6 +1,6 @@
 $(document).ready(function () {
     trafType = ($('input[type=radio][name=type]:checked').val());
-    lane = $('input[type=radio][name=lane]').val();
+    lane = $('input[type=radio][name=lane]:checked').val();
 
     $('.tabs').tabs();
     document.getElementById("datePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
