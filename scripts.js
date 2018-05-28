@@ -40,6 +40,9 @@ $(document).ready(function () {
     document.getElementById('tempSlider').noUiSlider.on('change', () => startDrawingFromType());
     document.getElementById('rainSlider').noUiSlider.on('change', () => startDrawingFromType());
 
+    var elems = document.querySelectorAll('.collapsible');
+    var instances = M.Collapsible.init(elems);
+
 });
 
 function tempCheckBoxClicked() {
@@ -467,6 +470,18 @@ function drawPathsWithWeatherData(drawData, name) {
 //this is the start data, therefore display it
 
 
+function updateStreetCard(amount, type, streetname) {
+    let realStreetname = streetname.slice(0, streetname.length - 5);
+    let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`
+    document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
+    document.getElementById('menge').innerHTML = amount + ' ' + type;
+}
+
+function clearStreetCard() {
+    document.getElementById('strassenname').innerHTML = 'Keine Strasse ausgwählt';
+    document.getElementById('menge').innerHTML = '';
+}
+
 function drawPathsWithTrafficData(drawData, date, time, name) {
     let maxCount = 0;
 
@@ -500,13 +515,15 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
                     div.html(el[`${date} ${time}`] + ' ' + name)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
+                    updateStreetCard(el[`${date} ${time}`], name, el.Strassenname);
                 })
                 .on("mouseout", (d) => {
                     divTimeoutHandle = setTimeout(() => {
                         div.transition()
                             .duration(200)
                             .style('opacity', 0);
-                    }, 3000)
+                    }, 3000);
+                    clearStreetCard();
                 });
         }
     })
