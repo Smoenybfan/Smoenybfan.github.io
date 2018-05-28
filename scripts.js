@@ -470,16 +470,44 @@ function drawPathsWithWeatherData(drawData, name) {
 //this is the start data, therefore display it
 
 
-function updateStreetCard(amount, type, streetname) {
+function updateStreetCard(amount, type, streetname, date, time) {
     let realStreetname = streetname.slice(0, streetname.length - 5);
     let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`
     document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
     document.getElementById('menge').innerHTML = amount + ' ' + type;
+    switch(type){
+        case 'Velofahrer':
+            if(pwData.findIndex(el => el.Strassenname === streetname)){
+                document.getElementById('type2').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
+            }
+            if(busData.findIndex(el => el.Strassenname === streetname)){
+                document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
+            }
+            break;
+        case 'Busse':
+            if(veloData.findIndex(el => el.Strassenname === streetname)){
+                document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
+            }
+            if(pwData.findIndex(el => el.Strassenname === streetname)){
+                document.getElementById('type3').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
+            }
+            break;
+        case 'Personenwagen':
+            if(veloData.findIndex(el => el.Strassenname === streetname)){
+                document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
+            }
+            if(busData.findIndex(el => el.Strassenname === streetname)){
+                document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
+            }
+            break;
+    }
 }
 
 function clearStreetCard() {
     document.getElementById('strassenname').innerHTML = 'Keine Strasse ausgwählt';
     document.getElementById('menge').innerHTML = '';
+    document.getElementById('type2').innerHTML = '';
+    document.getElementById('type3').innerHTML = '';
 }
 
 function drawPathsWithTrafficData(drawData, date, time, name) {
@@ -515,15 +543,16 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
                     div.html(el[`${date} ${time}`] + ' ' + name)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
-                    updateStreetCard(el[`${date} ${time}`], name, el.Strassenname);
+                    updateStreetCard(el[`${date} ${time}`], name, el.Strassenname, date, time);
                 })
                 .on("mouseout", (d) => {
                     divTimeoutHandle = setTimeout(() => {
                         div.transition()
                             .duration(200)
                             .style('opacity', 0);
+                        clearStreetCard();
                     }, 3000);
-                    clearStreetCard();
+
                 });
         }
     })
