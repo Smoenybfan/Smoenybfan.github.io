@@ -46,6 +46,13 @@ $(document).ready(function () {
     var elems = document.querySelectorAll('.collapsible');
     var instances = M.Collapsible.init(elems);
 
+    var elems = document.querySelectorAll('.modal');
+    var instance = M.Modal.init(elems);
+
+    instance[0].open();
+
+
+
 });
 
 function clearTextBoxes(){

@@ -50,7 +50,7 @@
                 <form>
                     <p>
                         <label>
-                            <input value="Velofahrer" class="with-gap" name="type" type="radio"/>
+                            <input value="Velofahrer" class="with-gap" name="type" type="radio" checked/>
                             <span><i class="material-icons">directions_bike</i> Velo</span>
                         </label>
                     </p>
@@ -166,24 +166,28 @@
         <div class="card">
             <div class="card-tabs">
                 <ul class="tabs tabs-fixed-width">
+                    <li class="tab"><a href="#tabX">Benutzung</a> </li>
                     <li class="tab"><a href="#tab0">Über die Daten</a></li>
                     <li class="tab"><a href="#tab1">Benutzte Tools</a></li>
                 </ul>
             </div>
             <div class="card-content grey lighten-3">
-                <div id="tab0">
-                    Dieses Tool ist im Rahmen der <a
-                        href="http://www.digitale-nachhaltigkeit.unibe.ch/studium/open_data_vorlesung/index_ger.html"
-                        target="_blank">Open Data Vorlesung</a>
-                    entstanden. Es visualisiert die Verkehrszähldaten der Stadt Basel aus dem Jahr 2017.
-
-                    <div class="divider" style="padding-top: 10px;"></div>
+                <div id="tabX">
                     <b>Benutzung:</b> Die Basisfilter sind die Verkehrsart und die Spuren. Weiter können die Daten dann
                     entweder nach Wetter oder nach Datum und Zeit gefiltert werden.
                     Die Aktivierung eines der Wetterfilter deaktiviert dabei die Filter von Datum und Zeit.<br>
                     Wird die Maus über eine der Strassen bewegt erscheint eine Box mit der Anzahl der Verkehrsteilnehmer
                     an dieser Strasse. Unterhalb dieser Box steht zusätzlich der Vergleich
                     zu den Verkehrsteilnehmern der nicht angwählten Verkehrsarten.
+                </div>
+                <div id="tab0">
+                    Dieses Tool ist im Rahmen der <a
+                        href="http://www.digitale-nachhaltigkeit.unibe.ch/studium/open_data_vorlesung/index_ger.html"
+                        target="_blank">Open Data Vorlesung</a>
+                    entstanden. Es visualisiert die Verkehrszähldaten der Stadt Basel aus dem Jahr 2017.
+
+
+
 
                 </div>
                 <div id="tab1">
@@ -210,6 +214,21 @@
         </div>
     </div>
     <div class="col s1"></div>
+</div>
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <h4>Benutzung</h4>
+        Die Basisfilter sind die Verkehrsart und die Spuren. Weiter können die Daten dann
+        entweder nach Wetter oder nach Datum und Zeit gefiltert werden.
+        Die Aktivierung eines der Wetterfilter deaktiviert dabei die Filter von Datum und Zeit.<br>
+        Wird die Maus über eine der Strassen bewegt erscheint eine Box mit der Anzahl der Verkehrsteilnehmer
+        an dieser Strasse. Unterhalb dieser Box steht zusätzlich der Vergleich
+        zu den Verkehrsteilnehmern der nicht angwählten Verkehrsarten.
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Schliessen</a>
+    </div>
 </div>
 <script src="scripts.js"></script>
 </body>
