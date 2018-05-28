@@ -105,3 +105,20 @@ input[type=range][orient=vertical]
     -webkit-appearance: slider-vertical; /* WebKit */
 
 }
+
+input[type=range]:disabled + .thumb{
+    background-color: #dedede;
+}
+input[type=range]:disabled + .thumb.active .value{
+    color: #B8B8B8;
+}
+
+input[type=range]:disabled::-webkit-slider-thumb{
+    background-color: #B8B8B8;
+}
+input[type=range]:disabled::-moz-range-thumb{
+    background-color: #B8B8B8;
+}
+input[type=range]:disabled::-ms-thumb{
+    background-color: #B8B8B8;
+}

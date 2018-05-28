@@ -55,8 +55,8 @@ function tempCheckBoxClicked() {
         document.getElementById('timeSlider').removeAttribute('disabled');
         document.getElementById('dateSlider').removeAttribute('disabled');
     } else {
-        document.getElementById('timeSlider').setAttribute('disabled', 'true');
-        document.getElementById('dateSlider').setAttribute('disabled', 'true');
+        document.getElementById('timeSlider').disabled = true;
+        document.getElementById('dateSlider').disabled = true;
     }
 }
 
@@ -74,8 +74,9 @@ function rainCheckBoxClicked() {
         document.getElementById('timeSlider').removeAttribute('disabled');
         document.getElementById('dateSlider').removeAttribute('disabled');
     } else {
-        document.getElementById('timeSlider').setAttribute('disabled', 'true');
-        document.getElementById('dateSlider').setAttribute('disabled', 'true');
+        document.getElementById('timeSlider').disabled = true;
+        document.getElementById('timeSlider').parentElement.disabled = true;
+        document.getElementById('dateSlider').disabled = true;
     }
 }
 
