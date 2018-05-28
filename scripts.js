@@ -478,6 +478,7 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
         })
     });
     let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
+     scale = d3.scaleLinear().domain([1, 250]).range([4, 10]);
 
     drawData.forEach((el) => {
         if (el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane) {
