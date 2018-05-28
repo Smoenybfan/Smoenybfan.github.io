@@ -5,25 +5,28 @@ $(document).ready(function () {
     $('.tabs').tabs();
     document.getElementById("datePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">date_range</i> ${getDateFromYearDay(document.getElementById("dateSlider").value)}`;
     document.getElementById("dateSlider").oninput = function () {
+        clearTextBoxes();
         document.getElementById("datePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">date_range</i>  ${getDateFromYearDay(this.value)}`;
         drawPathsWithTrafficData(selectedData, getDateFromYearDay(this.value), getHourFromSeconds(document.getElementById("timeSlider").value), trafType);
     };
 
     document.getElementById("timePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">access_time</i> ${getHourFromSeconds(document.getElementById("timeSlider").value)}`;
     document.getElementById("timeSlider").oninput = function () {
+        clearTextBoxes();
         document.getElementById("timePicked").innerHTML = `<i class="material-icons" style="margin-right: 5px">access_time</i>  ${getHourFromSeconds(this.value)}`;
         drawPathsWithTrafficData(selectedData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(this.value), trafType);
     };
 
     $('input[type=radio][name=type]').change(function () {
         trafType = this.value;
+        clearTextBoxes();
         startDrawingFromType();
 
     });
 
     $('input[type=radio][name=lane]').change(function () {
         lane = this.value;
-        console.log(lane);
+        clearTextBoxes();
         startDrawingFromType();
 
     });
@@ -45,8 +48,18 @@ $(document).ready(function () {
 
 });
 
+function clearTextBoxes(){
+    div.transition()
+        .duration(200)
+        .style('opacity', 0);
+    clearTimeout(divTimeoutHandle);
+
+    clearStreetCard();
+}
+
 function tempCheckBoxClicked() {
     tempEnabled = !tempEnabled;
+    clearTextBoxes();
     if (document.getElementById('tempSlider').getAttribute('disabled')) {
         document.getElementById('tempSlider').removeAttribute('disabled');
     } else {
@@ -65,6 +78,7 @@ function tempCheckBoxClicked() {
 
 function rainCheckBoxClicked() {
     rainEnabled = !rainEnabled;
+    clearTextBoxes();
     if (document.getElementById('rainSlider').getAttribute('disabled')) {
         document.getElementById('rainSlider').removeAttribute('disabled');
     } else {
@@ -104,14 +118,14 @@ function initTempSlider() {
 function initRainSlider() {
     let slider = document.getElementById('rainSlider');
     noUiSlider.create(slider, {
-        start: [0, 10],
+        start: [0, 1],
         tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
         connect: true,
-        step: 1,
+        step: 0.1,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
             'min': 0,
-            'max': 10
+            'max': 1
         },
         format: wNumb({
             decimals: 0
@@ -133,7 +147,6 @@ function readVeloData(callback) {
 }
 
 function startDrawingFromType() {
-    console.log(trafType);
     switch (trafType) {
         case 'Personenwagen':
             drawPaths('./basel_moto.geojson', pwData, trafType, "#4B0082");
@@ -336,31 +349,7 @@ function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     });
 }
 
-
-function sumAndFilterDrawData(drawData, allowedDateTimes) {
-    let summedObj = {};
-    for(let i = 0; i < drawData.length; i++ ){
-        let streetname = drawData[i].Strassenname.substring(0, drawData[i].Strassenname.length - 5);
-        summedObj[drawData[i].Strassenname] = 0;
-        if (drawData[i].Strassenname.substring(drawData[i].Strassenname.length - 5, drawData[i].Strassenname.length) != lane) {
-            continue;
-        }
-        for(let key in drawData[i]){
-            if(allowedDateTimes.includes(key)){
-                if(!isNaN(drawData[i][key])){
-                    summedObj[drawData[i].Strassenname] += +drawData[i][key];
-                }
-            }
-        }
-
-        summedObj[drawData[i].Strassenname] /= allowedDateTimes.length;
-    }
-
-    return summedObj;
-}
-
 function sumAndFilterDrawDataFaster(drawDate, alloweDateTimes) {
-    console.log(alloweDateTimes);
     let summedObj = {};
 
     for(let j = 0; j < drawDate.length; j++){
@@ -385,6 +374,27 @@ function sumAndFilterDrawDataFaster(drawDate, alloweDateTimes) {
     return summedObj;
 }
 
+function updateStreetWeatherCard(amount, type, streetname, rainVals, tempVals) {
+    let realStreetname = streetname.slice(0, streetname.length - 5);
+    let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`;
+
+     let datetimeText = `Zwischen `;
+     if(tempEnabled){
+         datetimeText += `${tempVals[0]}&deg;C und ${tempVals[1]}&deg;C `;
+         if(rainEnabled){
+             datetimeText += 'und zwischen ';
+         }
+     }
+
+    if(rainEnabled){
+        datetimeText += `${rainVals[0]}mm und ${rainVals[1]}mm`;
+    }
+
+    document.getElementById('datetime').innerHTML = datetimeText;
+    document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
+    document.getElementById('menge').innerHTML = Math.round(amount) + ' ' + type;
+}
+
 function drawPathsWithWeatherData(drawData, name) {
     let tempVals = document.getElementById('tempSlider').noUiSlider.get();
     let rainVals = document.getElementById('rainSlider').noUiSlider.get();
@@ -395,10 +405,6 @@ function drawPathsWithWeatherData(drawData, name) {
 
     let allowedDateTimes = Object.keys(drawData[0]);
     allowedDateTimes = allowedDateTimes.slice(0, allowedDateTimes.length);
-    console.log(tempData["01.02.2017 03:00 - 04:00"]);
-    console.log(rainData["01.02.2017 03:00 - 04:00"]);
-    console.log(rainVals);
-    console.log(tempVals);
 
 
     let street = drawData[0];
@@ -455,6 +461,7 @@ function drawPathsWithWeatherData(drawData, name) {
                     div.html(Math.round(summedObj[el.Strassenname]) + ' ' + name)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
+                    updateStreetWeatherCard(summedObj[el.Strassenname], name, el.Strassenname, rainVals, tempVals);
                 })
                 .on("mouseout", (d) => {
                     divTimeoutHandle = setTimeout(() => {
@@ -473,7 +480,8 @@ function drawPathsWithWeatherData(drawData, name) {
 
 function updateStreetCard(amount, type, streetname, date, time) {
     let realStreetname = streetname.slice(0, streetname.length - 5);
-    let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`
+    let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`;
+    document.getElementById('datetime').innerHTML = `Am ${date} von ${time} Uhr.`;
     document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
     document.getElementById('menge').innerHTML = amount + ' ' + type;
     switch(type){
@@ -509,6 +517,7 @@ function clearStreetCard() {
     document.getElementById('menge').innerHTML = '';
     document.getElementById('type2').innerHTML = '';
     document.getElementById('type3').innerHTML = '';
+    document.getElementById('datetime').innerHTML = '';
 }
 
 function drawPathsWithTrafficData(drawData, date, time, name) {
