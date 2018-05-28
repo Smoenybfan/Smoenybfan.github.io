@@ -50,6 +50,14 @@ function tempCheckBoxClicked() {
         document.getElementById('tempSlider').setAttribute('disabled', 'true');
     }
     startDrawingFromType();
+
+    if(!rainEnabled && !tempEnabled){
+        document.getElementById('timeSlider').removeAttribute('disabled');
+        document.getElementById('dateSlider').removeAttribute('disabled');
+    } else {
+        document.getElementById('timeSlider').setAttribute('disabled', 'true');
+        document.getElementById('dateSlider').setAttribute('disabled', 'true');
+    }
 }
 
 function rainCheckBoxClicked() {
@@ -59,19 +67,29 @@ function rainCheckBoxClicked() {
     } else {
         document.getElementById('rainSlider').setAttribute('disabled', 'true');
     }
+
+    startDrawingFromType();
+
+    if(!rainEnabled && !tempEnabled){
+        document.getElementById('timeSlider').removeAttribute('disabled');
+        document.getElementById('dateSlider').removeAttribute('disabled');
+    } else {
+        document.getElementById('timeSlider').setAttribute('disabled', 'true');
+        document.getElementById('dateSlider').setAttribute('disabled', 'true');
+    }
 }
 
 function initTempSlider() {
     let slider = document.getElementById('tempSlider');
     noUiSlider.create(slider, {
-        start: [-10, 40],
+        start: [-10.0, 40.0],
         tooltips: [wNumb({decimals: 1, suffix: ' &deg;C'}), wNumb({decimals: 1, suffix: ' &deg;C'})],
         connect: true,
         step: 0.1,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
-            'min': -10,
-            'max': 40
+            'min': -10.0,
+            'max': 40.0
         },
         format: wNumb({
             decimals: 0
@@ -82,14 +100,14 @@ function initTempSlider() {
 function initRainSlider() {
     let slider = document.getElementById('rainSlider');
     noUiSlider.create(slider, {
-        start: [0, 1],
+        start: [0, 10],
         tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
         connect: true,
-        step: 0.1,
+        step: 1,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
             'min': 0,
-            'max': 1
+            'max': 10
         },
         format: wNumb({
             decimals: 0
@@ -209,7 +227,6 @@ function projectPoint(x, y) {
 function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     d3.json(streetsFilePath, (basel) => {
         data = basel;
-        console.log(basel);
 
         //we create a d3 geoTransform to map points into the correct space.
         var transform = d3.geoTransform({point: projectPoint}),
@@ -337,6 +354,32 @@ function sumAndFilterDrawData(drawData, allowedDateTimes) {
     return summedObj;
 }
 
+function sumAndFilterDrawDataFaster(drawDate, alloweDateTimes) {
+    console.log(alloweDateTimes);
+    let summedObj = {};
+
+    for(let j = 0; j < drawDate.length; j++){
+        summedObj[drawDate[j].Strassenname] = 0;
+    }
+    if(alloweDateTimes.length === 0){
+        return summedObj;
+    }
+
+    for(let i = 0; i < alloweDateTimes.length; i++ ){
+        for(let j = 0; j < drawDate.length; j++) {
+            if(!isNaN(drawDate[j][alloweDateTimes[i]])){
+                summedObj[drawDate[j].Strassenname] += +(drawDate[j][alloweDateTimes[i]]);
+            }
+        }
+    }
+
+    for(let j = 0; j < drawDate.length; j++){
+        summedObj[drawDate[j].Strassenname] /= alloweDateTimes.length;
+    }
+
+    return summedObj;
+}
+
 function drawPathsWithWeatherData(drawData, name) {
     let tempVals = document.getElementById('tempSlider').noUiSlider.get();
     let rainVals = document.getElementById('rainSlider').noUiSlider.get();
@@ -345,41 +388,36 @@ function drawPathsWithWeatherData(drawData, name) {
     let rainData = weatherData[1];
     let tempData = weatherData[0];
 
-    console.log(Object.values(tempData).map(el => +el));
-    console.log(drawData);
-
     let allowedDateTimes = Object.keys(drawData[0]);
     allowedDateTimes = allowedDateTimes.slice(0, allowedDateTimes.length);
+    console.log(tempData["01.02.2017 03:00 - 04:00"]);
+    console.log(rainData["01.02.2017 03:00 - 04:00"]);
+    console.log(rainVals);
+    console.log(tempVals);
 
 
     let street = drawData[0];
-    console.log(rainData);
-    console.log(+rainData["31.12.2017 23:00 - 00:00"]);
-    console.log(allowedDateTimes.findIndex(el => el === "31.12.2017 23:00 - 00:00"));
     if (rainEnabled) {
         Object.keys(street).forEach(dateTime => {
-            if (+rainData[dateTime] < rainVals[0] || +rainData[dateTime] > rainVals[1]) {
-                // console.log(dateTime);
+            if (+rainData[dateTime] / 10.0 < +rainVals[0] || +rainData[dateTime] /10.0 > +rainVals[1]) {
                 allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+
+            } else {
             }
         });
     }
-    // console.log(Object.keys(street));
     if (tempEnabled) {
         Object.keys(street).forEach(dateTime => {
-            // console.log(+tempData[dateTime]);
-            if (+tempData[dateTime] < tempVals[0] || +tempData[dateTime] > tempVals[1]) {
-                // console.log(dateTime);
+            if (+tempData[dateTime] < +tempVals[0] || +tempData[dateTime] > +tempVals[1]) {
                 allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+            } else {
             }
         });
     }
 
-    console.log(allowedDateTimes);
 
-    let summedObj = sumAndFilterDrawData(drawData, allowedDateTimes);
+    let summedObj = sumAndFilterDrawDataFaster(drawData, allowedDateTimes);
 
-    console.log(summedObj);
 
     let maxCount = 0;
     drawData.forEach(el => {
@@ -439,13 +477,11 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
         })
     });
     let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
-    console.log(drawData.slice(drawData.length - 2, drawData.length));
 
     drawData.forEach((el) => {
         if (el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane) {
             return;
         }
-        console.log(`#path-${el.Strassenname.slice(el.Strassenname.length - 5, el.Strassenname.length)}`);
         domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
         if (domEl) {
             if (+el[`${date} ${time}`] <= 0) {
@@ -496,19 +532,4 @@ function readPwData(callback) {
 }
 
 
-//this method accepts an array of paths as an argument and creates a "filling" animation from start to end
-function startAnimation(paths, transitionTime) {
-    console.log(paths[0][0].attributes.getNamedItem('stroke-dasharray'));
-    console.log(paths[0][0].attributes.getNamedItem('stroke-dashoffset'));
 
-
-    //this is the moving part. The transition sets the stroke-dashoffset to 0 according to the duration
-    // You can see this as the pattern being moved along the line until the first part of the patttern (the
-    // visible dash with the whole path as length) starts at the start of the path
-// .
-//     transition()
-//         .duration(transitionTime)
-//         .ease("linear")
-//         .attr("stroke-dashoffset", 0);
-
-}
