@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    trafType = ($('input[type=radio][name=type]').val());
+    trafType = ($('input[type=radio][name=type]:checked').val());
     lane = $('input[type=radio][name=lane]').val();
 
     $('.tabs').tabs();
@@ -133,6 +133,7 @@ function readVeloData(callback) {
 }
 
 function startDrawingFromType() {
+    console.log(trafType);
     switch (trafType) {
         case 'Personenwagen':
             drawPaths('./basel_moto.geojson', pwData, trafType, "#4B0082");
@@ -477,26 +478,26 @@ function updateStreetCard(amount, type, streetname, date, time) {
     document.getElementById('menge').innerHTML = amount + ' ' + type;
     switch(type){
         case 'Velofahrer':
-            if(pwData.findIndex(el => el.Strassenname === streetname)){
+            if(pwData.find(el => el.Strassenname === streetname)){
                 document.getElementById('type2').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
             }
-            if(busData.findIndex(el => el.Strassenname === streetname)){
+            if(busData.find(el => el.Strassenname === streetname)){
                 document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
             }
             break;
         case 'Busse':
-            if(veloData.findIndex(el => el.Strassenname === streetname)){
+            if(veloData.find(el => el.Strassenname === streetname)){
                 document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
             }
-            if(pwData.findIndex(el => el.Strassenname === streetname)){
+            if(pwData.find(el => el.Strassenname === streetname)){
                 document.getElementById('type3').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
             }
             break;
         case 'Personenwagen':
-            if(veloData.findIndex(el => el.Strassenname === streetname)){
+            if(veloData.find(el => el.Strassenname === streetname)){
                 document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
             }
-            if(busData.findIndex(el => el.Strassenname === streetname)){
+            if(busData.find(el => el.Strassenname === streetname)){
                 document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
             }
             break;

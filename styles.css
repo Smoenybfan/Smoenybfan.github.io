@@ -121,4 +121,5 @@ input[type=range]:disabled::-moz-range-thumb{
 }
 input[type=range]:disabled::-ms-thumb{
     background-color: #B8B8B8;
+    background-color: #B8B8B8;
 }

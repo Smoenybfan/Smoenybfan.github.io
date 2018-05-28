@@ -50,7 +50,7 @@
                 <form>
                     <p>
                         <label>
-                            <input value="Velofahrer" class="with-gap" name="type" type="radio" checked/>
+                            <input value="Velofahrer" class="with-gap" name="type" type="radio" />
                             <span><i class="material-icons">directions_bike</i> Velo</span>
                         </label>
                     </p>
@@ -104,7 +104,7 @@
                     <p>
                         <label>
                             <input type="checkbox" onclick="tempCheckBoxClicked()"/>
-                            <span>Enable/Disable Temperature</span>
+                            <span>Aktiviere/Deaktiviere Temperaturfilter</span>
                         </label>
                     </p>
 
@@ -114,7 +114,7 @@
                     <p>
                         <label>
                             <input type="checkbox" onclick="rainCheckBoxClicked()"/>
-                            <span>Enable/Disable Niederschlagsmenge</span>
+                            <span>Aktiviere/Deaktiviere Niederschlagsmenge</span>
                         </label>
                     </p>
 
@@ -166,20 +166,25 @@
         <div class="card">
             <div class="card-tabs">
                 <ul class="tabs tabs-fixed-width">
-                    <li class="tab"><a href="#tab0">About the data</a></li>
-                    <li class="tab"><a href="#tab1">Our Tools</a></li>
+                    <li class="tab"><a href="#tab0">Über die Daten</a></li>
+                    <li class="tab"><a href="#tab1">Benutzte Tools</a></li>
                 </ul>
             </div>
             <div class="card-content grey lighten-3">
                 <div id="tab0">
-                    We like Open Data.
+                    Dieses Tool ist im Rahmen der <a href="http://www.digitale-nachhaltigkeit.unibe.ch/studium/open_data_vorlesung/index_ger.html" target="_blank">Open Data Vorlesung</a>
+                    entstanden. Es visualisiert die Verkehrszähldaten der Stadt Basel aus dem Jahr 2017.
+
+                    <div class="divider" style="padding-top: 10px;"></div>
+                    <b>Benutzung:</b> Die Basisfilter sind die Verkehrsart und die Spuren. Weiter können die Daten dann entweder nach Wetter oder nach Datum und Zeit gefiltert werden.
+                    Die Aktivierung eines der Wetterfilter deaktiviert dabei die Filter von Datum und Zeit.<br>
+                    Wird die Maus über eine der Strassen bewegt erscheint eine Box mit der Anzahl der Verkehrsteilnehmer an dieser Strasse. Unterhalb dieser Box steht zusätzlich der Vergleich
+                    zu den Verkehrsteilnehmern der nicht angwählten Verkehrsarten.
+
                 </div>
                 <div id="tab1">
-                    We used D3, Leaflet and Materialize.<br/>
-                    We used D3, Leaflet and Materialize.<br/>
-                    We used D3, Leaflet and Materialize.<br/>
-                    We used D3, Leaflet and Materialize.<br/>
-                    We used D3, Leaflet and Materialize.<br/>
+                    Wir haben <a href="https://leafletjs.com/" target="_blank">Leaflet</a>  für die Karte, <a href="https://d3js.org/">D3</a> für die Visualisierung der Daten und
+                    <a href="https://materializecss.com/">Materialize</a> für das Design verwendet.
                 </div>
             </div>
         </div>
