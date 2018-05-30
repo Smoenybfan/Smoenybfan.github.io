@@ -55,6 +55,13 @@ $(document).ready(function () {
 
 });
 
+function openModal(){
+    var elems = document.querySelectorAll('.modal');
+    var instance = M.Modal.init(elems);
+
+    instance[0].open();
+}
+
 function clearTextBoxes(){
     div.transition()
         .duration(200)

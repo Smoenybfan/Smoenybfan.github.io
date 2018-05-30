@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Verkehrszähldaten 2017</title>
 
     <!--Jquery-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -36,7 +36,7 @@
 <body>
 <nav>
     <div class="nav-wrapper  teal darken-2">
-        <a href="#" class="brand-logo" style="margin-left: 20px">Verkehrszähldaten Visualisierung 2018</a>
+        <a href="#" class="brand-logo" style="margin-left: 20px">Verkehrszähldaten Visualisierung 2017</a>
         <ul id="nav-mobil" class="right hid-on-med-and-down">
             <!--<li><a href="#">Nowhere</a> </li>-->
         </ul>
@@ -179,6 +179,8 @@
                     Wird die Maus über eine der Strassen bewegt erscheint eine Box mit der Anzahl der Verkehrsteilnehmer
                     an dieser Strasse. Unterhalb dieser Box steht zusätzlich der Vergleich
                     zu den Verkehrsteilnehmern der nicht angwählten Verkehrsarten.
+                    <br />
+                    <a href="#" onclick="openModal()">Öffne gesamte Anleitung</a>
                 </div>
                 <div id="tab0">
                     Dieses Tool ist im Rahmen der <a
@@ -219,13 +221,36 @@
 <div id="modal1" class="modal">
     <div class="modal-content">
         <h4>Benutzung</h4>
-        Die Basisfilter sind die Verkehrsart und die Spuren. Weiter können die Daten dann
-        entweder nach Wetter oder nach Datum und Zeit gefiltert werden.
-        Die Aktivierung eines der Wetterfilter deaktiviert dabei die Filter von Datum und Zeit.<br>
-        Wird die Maus über eine der Strassen bewegt erscheint eine Box mit der Anzahl der Verkehrsteilnehmer
-        an dieser Strasse. Unterhalb dieser Box steht zusätzlich der Vergleich
-        zu den Verkehrsteilnehmern der nicht angwählten Verkehrsarten.
+        <!--<b>Willkommen zur Visualisierung der Verkehrszähldaten der Stadt Basel 2017.</b><br /><br />-->
+
+        Die Daten können auf mehrere Arten gefiltert werden. Die Filteroptionen befinden sich auf der linken Seite. <br>
+
+        Die erste Box ermöglicht dabei den Filter nach Verkehrsart, wobei eine Möglichkeit stets angewählt ist. <br />
+        <img src="images/tut_type.png" width="50%" > <br />
+
+        Die zweite Box ermöglicht den Filter nach Spuren, wobei nur zwei Spuren auswählbar sind. Falls eine Strasse mehr als zwei Spuren hätte wurden sie auf zwei reduziert. <br />
+
+        <img src="images/tut_lanes.png" width="50%"> <br />
+
+        Die letzte Box auf der linken Seite ermöglicht den Filter nach Wetter, wobei es einen Filter für die Temperatur und einen Filter für den Niederschlag gibt.
+        Standardmässig ist dieser Filter deaktiviert und kann durch das Anklicken der Auswahlbox aktiviert werden. Die dargestellten Daten sind dann die Durchschnittswerte. <i>Das Aktivieren/Deaktivieren einer dieser Auswahlmöglichkeiten
+        deaktiviert/aktiviert den Filter nach Datum/Zeit</i>. <br />
+
+        <img src="images/tut_weather.png" width="50%"> <br />
+
+        Unterhalb der Karte befinden sich ein Filter für Datum/Zeit. <i>Dieser Filter ist nur verfügbar wenn beide Wetterfilter deaktiviert sind</i> <br />
+
+        <img src="images/tut_datetime.png" width="50%"> <br />
+
+        Die Dicke einer Linie zeigt an, wie viele Verkehrsteilnehmer diese Strasse befahren haben. Wird die Maus über eine Linie bewegt, erscheint ein Tooltip mit der Anzahl und auf der rechten Seite wird in der
+        Box eine detailliertere Ansicht angezeigt.
+
+        <img src="images/tut_detail.png" width="50%"> <br />
+
+        Diese Anleitung kann in der Bedienungsbox jederzeit wieder geöffnet werden. Zum Schliessen neben die Anleitung oder auf den 'Schliessen' Button klicken. 
+
     </div>
+    <div class="divider"></div>
     <div class="modal-footer">
         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Schliessen</a>
     </div>
