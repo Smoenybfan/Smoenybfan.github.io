@@ -125,18 +125,27 @@ function initTempSlider() {
 function initRainSlider() {
     let slider = document.getElementById('rainSlider');
     noUiSlider.create(slider, {
-        start: [0, 1],
-        tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
+        start: [0, 10],
+        // tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
+        format: {
+            to: (value) => {
+                return value /10 + ' mm';
+            },
+            from: (value) => {
+                return (value.replace(' mm', '') *10);
+            }
+        },
+        tooltips: [true, true],
         connect: true,
-        step: 0.1,
+        step: 1,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
             'min': 0,
-            'max': 1
+            'max': 10
         },
-        format: wNumb({
-            decimals: 0
-        })
+        // format: wNumb({
+        //     decimals: 0
+        // })
     });
 }
 
@@ -399,12 +408,21 @@ function updateStreetWeatherCard(amount, type, streetname, rainVals, tempVals) {
 
     document.getElementById('datetime').innerHTML = datetimeText;
     document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
-    document.getElementById('menge').innerHTML = Math.round(amount) + ' ' + type;
+
+
+    if(rainEnabled || tempEnabled){
+        document.getElementById('menge').innerHTML = 'Durchschnittlich ' + Math.round(amount) + ' ' + type;
+    } else {
+        document.getElementById('menge').innerHTML = Math.round(amount) + ' ' + type;
+    }
 }
 
 function drawPathsWithWeatherData(drawData, name) {
     let tempVals = document.getElementById('tempSlider').noUiSlider.get();
-    let rainVals = document.getElementById('rainSlider').noUiSlider.get();
+    let rainVals = document.getElementById('rainSlider').noUiSlider.get().map(el => {
+        return el.substring(0, el.length-3);
+    });
+    console.log(rainVals);
 
     let weatherData = drawData.slice(drawData.length - 2, drawData.length);
     let rainData = weatherData[1];
@@ -417,7 +435,7 @@ function drawPathsWithWeatherData(drawData, name) {
     let street = drawData[0];
     if (rainEnabled) {
         Object.keys(street).forEach(dateTime => {
-            if (+rainData[dateTime] / 10.0 < +rainVals[0] || +rainData[dateTime] /10.0 > +rainVals[1]) {
+            if (+rainData[dateTime]  < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
                 allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
 
             } else {
