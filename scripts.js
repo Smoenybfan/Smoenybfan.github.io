@@ -557,18 +557,6 @@ function drawPathsWithWeatherData(drawData, name) {
 
     let removedElementCounter = 0;
     if (rainEnabled) {
-        // console.log(+rainVals[0] + ' ' + +rainVals[1]);
-        // Object.keys(street).forEach(dateTime => {
-        //     if (+rainData[dateTime] < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
-        //         let ind = allowedDateTimes.findIndex(el => el === dateTime);
-        //         if(ind <0){
-        //             console.log(dateTime);
-        //         } else {
-        //
-        //             allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
-        //         }
-        //     }
-        // });
 
         Object.keys(rainData).slice(1, allowedDateTimes.length).forEach((dateTime, index) => {
             if (isNaN(rainData[dateTime]) || +rainData[dateTime] < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
@@ -618,25 +606,29 @@ function drawPathsWithWeatherData(drawData, name) {
         domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
         if (domEl) {
             domEl.style('stroke-width', scale(summedObj[el.Strassenname]));
-
-            domEl
-                .on("mouseover", (d) => {
-                    clearTimeout(divTimeoutHandle);
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html(Math.round(summedObj[el.Strassenname]) + ' ' + name)
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                    updateStreetWeatherCard(summedObj[el.Strassenname], name, el.Strassenname, rainVals, tempVals);
-                })
-                .on("mouseout", (d) => {
-                    divTimeoutHandle = setTimeout(() => {
+            if(allowedDateTimes.length === 0){
+                domEl.style('opacity', 0);
+            } else {
+                domEl.style('opacity', 0.5);
+                domEl
+                    .on("mouseover", (d) => {
+                        clearTimeout(divTimeoutHandle);
                         div.transition()
                             .duration(200)
-                            .style('opacity', 0);
-                    }, 3000)
-                });
+                            .style("opacity", .9);
+                        div.html(Math.round(summedObj[el.Strassenname]) + ' ' + name)
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 28) + "px");
+                        updateStreetWeatherCard(summedObj[el.Strassenname], name, el.Strassenname, rainVals, tempVals);
+                    })
+                    .on("mouseout", (d) => {
+                        divTimeoutHandle = setTimeout(() => {
+                            div.transition()
+                                .duration(200)
+                                .style('opacity', 0);
+                        }, 3000)
+                    });
+            }
         }
     })
 }
