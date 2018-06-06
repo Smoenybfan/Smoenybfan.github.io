@@ -202,27 +202,28 @@ function drawPathsWithTrafficData(drawData, date, time, name) {
                 domEl.style('stroke-width', 0);
             } else {
                 domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
-            }
-            domEl
-                .on("mouseover", (d) => {
-                    clearTimeout(divTimeoutHandle);
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html(el[`${date} ${time}`] + ' ' + name)
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                    updateStreetCard(el[`${date} ${time}`], name, el.Strassenname, date, time);
-                })
-                .on("mouseout", (d) => {
-                    divTimeoutHandle = setTimeout(() => {
+
+                domEl
+                    .on("mouseover", (d) => {
+                        clearTimeout(divTimeoutHandle);
                         div.transition()
                             .duration(200)
-                            .style('opacity', 0);
-                        clearStreetCard();
-                    }, 3000);
+                            .style("opacity", .9);
+                        div.html(el[`${date} ${time}`] + ' ' + name)
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY - 28) + "px");
+                        updateStreetCard(el[`${date} ${time}`], name, el.Strassenname, date, time);
+                    })
+                    .on("mouseout", (d) => {
+                        divTimeoutHandle = setTimeout(() => {
+                            div.transition()
+                                .duration(200)
+                                .style('opacity', 0);
+                            clearStreetCard();
+                        }, 3000);
 
-                });
+                    });
+            }
         }
     })
 }
