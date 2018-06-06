@@ -15,6 +15,9 @@ let tempEnabled = false;
 let rainEnabled = false;
 
 $(document).ready(function () {
+
+    readBusData(readPwData);
+
     trafType = ($('input[type=radio][name=type]:checked').val());
     lane = $('input[type=radio][name=lane]:checked').val();
 
@@ -47,11 +50,6 @@ $(document).ready(function () {
 
     });
 
-    readBusData(readPwData);
-    // readPwData();
-
-
-    // startDrawingFromType();
 
     initTempSlider();
     initRainSlider();
@@ -68,8 +66,63 @@ $(document).ready(function () {
     instance[0].open();
 
 
-
 });
+
+
+function readBusData(callback) {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/bus.csv', (readData) => {
+        busData = readData;
+        if (callback) {
+            callback.call(undefined, readVeloData);
+        }
+    });
+
+
+}
+
+function readPwData(callback) {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/pw.csv', (readData) => {
+        pwData = readData;
+        if (callback) {
+            callback.call(undefined, startDrawingFromType);
+        }
+    })
+}
+
+
+function readVeloData(callback) {
+    d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
+        veloData = querriedVeloData;
+        selectedData = veloData;
+        // drawPaths('./streets.json', veloData, 'Velofahrer');
+        //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
+        if (callback) {
+            callback.call(null, startDrawingFromType);
+        }
+
+    });
+}
+
+function startDrawingFromType() {
+    switch (trafType) {
+        case 'Personenwagen':
+            drawPaths('./basel_moto.geojson', pwData, trafType, "#4B0082");
+            selectedData = pwData;
+            //drawPathsWithTrafficData(pwData, date, hour, trafType);
+            break;
+        case 'Velofahrer':
+            drawPaths('./streets.json', veloData, trafType, "#C71585");
+            selectedData = veloData;
+            //drawPathsWithTrafficData(veloData, date, hour, trafType);
+            break;
+        case 'Busse':
+            drawPaths('./basel_moto.geojson', busData, trafType, "#800080");
+            selectedData = busData;
+            //drawPathsWithTrafficData(busData, date, hour, trafType);
+            break;
+        // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
+    }
+}
 
 //accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
 function getDateFromYearDay(yearDay) {
@@ -106,7 +159,7 @@ function formatHours(hour) {
     }
 }
 
-function clearTextBoxes(){
+function clearTextBoxes() {
     div.transition()
         .duration(200)
         .style('opacity', 0);
@@ -115,13 +168,106 @@ function clearTextBoxes(){
     clearStreetCard();
 }
 
-function openModal(){
+function clearStreetCard() {
+    document.getElementById('strassenname').innerHTML = 'Keine Strasse ausgwählt';
+    document.getElementById('menge').innerHTML = '';
+    document.getElementById('type2').innerHTML = '';
+    document.getElementById('type3').innerHTML = '';
+    document.getElementById('datetime').innerHTML = '';
+}
+
+
+//this is the handle for the divTimeout
+function drawPathsWithTrafficData(drawData, date, time, name) {
+//we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
+    let maxCount = 0;
+
+    drawData.forEach(el => {
+        Object.values(el).forEach(value => {
+            if (!isNaN(value) && +value > maxCount) {
+                maxCount = +value;
+            }
+        })
+    });
+    let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
+    scale = d3.scaleLinear().domain([1, 250]).range([4, 10]);
+
+    drawData.forEach((el) => {
+        if (el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane) {
+            return;
+        }
+        domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
+        if (domEl) {
+            if (+el[`${date} ${time}`] <= 0) {
+                domEl.style('stroke-width', 0);
+            } else {
+                domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
+            }
+            domEl
+                .on("mouseover", (d) => {
+                    clearTimeout(divTimeoutHandle);
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html(el[`${date} ${time}`] + ' ' + name)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                    updateStreetCard(el[`${date} ${time}`], name, el.Strassenname, date, time);
+                })
+                .on("mouseout", (d) => {
+                    divTimeoutHandle = setTimeout(() => {
+                        div.transition()
+                            .duration(200)
+                            .style('opacity', 0);
+                        clearStreetCard();
+                    }, 3000);
+
+                });
+        }
+    })
+}
+
+function updateStreetCard(amount, type, streetname, date, time) {
+    let realStreetname = streetname.slice(0, streetname.length - 5);
+    let lane = `${streetname.slice(streetname.length - 5, streetname.length - 1)} ${streetname.slice(streetname.length - 1, streetname.length)}`;
+    document.getElementById('datetime').innerHTML = `Am ${date} von ${time} Uhr.`;
+    document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
+    document.getElementById('menge').innerHTML = amount + ' ' + type;
+    switch (type) {
+        case 'Velofahrer':
+            if (pwData.find(el => el.Strassenname === streetname)) {
+                document.getElementById('type2').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
+            }
+            if (busData.find(el => el.Strassenname === streetname)) {
+                document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
+            }
+            break;
+        case 'Busse':
+            if (veloData.find(el => el.Strassenname === streetname)) {
+                document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
+            }
+            if (pwData.find(el => el.Strassenname === streetname)) {
+                document.getElementById('type3').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
+            }
+            break;
+        case 'Personenwagen':
+            if (veloData.find(el => el.Strassenname === streetname)) {
+                document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
+            }
+            if (busData.find(el => el.Strassenname === streetname)) {
+                document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
+            }
+            break;
+    }
+}
+
+
+function openModal() {
     var elems = document.querySelectorAll('.modal');
     var instance = M.Modal.init(elems);
 
     instance[0].open();
 }
-
 
 function tempCheckBoxClicked() {
     tempEnabled = !tempEnabled;
@@ -133,7 +279,7 @@ function tempCheckBoxClicked() {
     }
     startDrawingFromType();
 
-    if(!rainEnabled && !tempEnabled){
+    if (!rainEnabled && !tempEnabled) {
         document.getElementById('timeSlider').removeAttribute('disabled');
         document.getElementById('dateSlider').removeAttribute('disabled');
     } else {
@@ -153,7 +299,7 @@ function rainCheckBoxClicked() {
 
     startDrawingFromType();
 
-    if(!rainEnabled && !tempEnabled){
+    if (!rainEnabled && !tempEnabled) {
         document.getElementById('timeSlider').removeAttribute('disabled');
         document.getElementById('dateSlider').removeAttribute('disabled');
     } else {
@@ -162,6 +308,7 @@ function rainCheckBoxClicked() {
         document.getElementById('dateSlider').disabled = true;
     }
 }
+
 
 function initTempSlider() {
     let slider = document.getElementById('tempSlider');
@@ -184,14 +331,14 @@ function initTempSlider() {
 function initRainSlider() {
     let slider = document.getElementById('rainSlider');
     noUiSlider.create(slider, {
-        start: [0, 10],
+        start: [0, 45],
         // tooltips: [wNumb({suffix: ' mm'}), wNumb({suffix: ' mm'})],
         format: {
             to: (value) => {
-                return value /10 + ' mm';
+                return value / 10 + ' mm';
             },
             from: (value) => {
-                return (value.replace(' mm', '') *10);
+                return (value.replace(' mm', '') * 10);
             }
         },
         tooltips: [true, true],
@@ -200,7 +347,7 @@ function initRainSlider() {
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
             'min': 0,
-            'max': 10
+            'max': 45
         },
         // format: wNumb({
         //     decimals: 0
@@ -208,51 +355,12 @@ function initRainSlider() {
     });
 }
 
-function readVeloData(callback) {
-    d3.csv('./VisualisierungVerkehrsdatenBasel/test.csv', (querriedVeloData) => {
-        veloData = querriedVeloData;
-        selectedData = veloData;
-        // drawPaths('./streets.json', veloData, 'Velofahrer');
-        //drawPathsWithTrafficData(veloData, getDateFromYearDay(document.getElementById('dateSlider').value), getHourFromSeconds(document.getElementById('timeSlider').value), 'Velofahrer');
-        if (callback) {
-            callback.call(null, startDrawingFromType);
-        }
-
-    });
-}
-
-function startDrawingFromType() {
-    switch (trafType) {
-        case 'Personenwagen':
-            drawPaths('./basel_moto.geojson', pwData, trafType, "#4B0082");
-            selectedData = pwData;
-            //drawPathsWithTrafficData(pwData, date, hour, trafType);
-            break;
-        case 'Velofahrer':
-            drawPaths('./streets.json', veloData, trafType, "#C71585");
-            selectedData = veloData;
-            //drawPathsWithTrafficData(veloData, date, hour, trafType);
-            break;
-        case 'Busse':
-            drawPaths('./basel_moto.geojson', busData, trafType, "#800080");
-            selectedData = busData;
-            //drawPathsWithTrafficData(busData, date, hour, trafType);
-            break;
-        // case 'all': drawPathsWithAllTrafficData(date, hour, trafType); break;
-    }
-}
-
-
-
-
-
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-//this is the handle for the divTimeout
 //the usage of this is to cancel the timeout of the disappearing of the div
 let divTimeoutHandle;
 
@@ -269,8 +377,6 @@ function projectPoint(x, y) {
     this.stream.point(point.x, point.y);
 }
 
-//we start our magic. d3.json is asynchronous, therefore everything that depends on the json data should be
-//inside here or be called from inside here.
 function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     d3.json(streetsFilePath, (basel) => {
         data = basel;
@@ -378,44 +484,46 @@ function drawPaths(streetsFilePath, drawData, verkehrsart, color) {
     });
 }
 
+
 function sumAndFilterDrawDataFaster(drawDate, alloweDateTimes) {
     let summedObj = {};
 
-    for(let j = 0; j < drawDate.length; j++){
+    for (let j = 0; j < drawDate.length; j++) {
         summedObj[drawDate[j].Strassenname] = 0;
     }
-    if(alloweDateTimes.length === 0){
+    if (alloweDateTimes.length === 0) {
         return summedObj;
     }
 
-    for(let i = 0; i < alloweDateTimes.length; i++ ){
-        for(let j = 0; j < drawDate.length; j++) {
-            if(!isNaN(drawDate[j][alloweDateTimes[i]])){
+    for (let i = 0; i < alloweDateTimes.length; i++) {
+        for (let j = 0; j < drawDate.length; j++) {
+            if (!isNaN(drawDate[j][alloweDateTimes[i]])) {
                 summedObj[drawDate[j].Strassenname] += +(drawDate[j][alloweDateTimes[i]]);
             }
         }
     }
 
-    for(let j = 0; j < drawDate.length; j++){
+    for (let j = 0; j < drawDate.length; j++) {
         summedObj[drawDate[j].Strassenname] /= alloweDateTimes.length;
     }
 
     return summedObj;
 }
 
+
 function updateStreetWeatherCard(amount, type, streetname, rainVals, tempVals) {
     let realStreetname = streetname.slice(0, streetname.length - 5);
-    let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`;
+    let lane = `${streetname.slice(streetname.length - 5, streetname.length - 1)} ${streetname.slice(streetname.length - 1, streetname.length)}`;
 
-     let datetimeText = `Zwischen `;
-     if(tempEnabled){
-         datetimeText += `${tempVals[0]}&deg;C und ${tempVals[1]}&deg;C `;
-         if(rainEnabled){
-             datetimeText += 'und zwischen ';
-         }
-     }
+    let datetimeText = `Zwischen `;
+    if (tempEnabled) {
+        datetimeText += `${tempVals[0]}&deg;C und ${tempVals[1]}&deg;C `;
+        if (rainEnabled) {
+            datetimeText += 'und zwischen ';
+        }
+    }
 
-    if(rainEnabled){
+    if (rainEnabled) {
         datetimeText += `${rainVals[0]}mm und ${rainVals[1]}mm`;
     }
 
@@ -423,17 +531,18 @@ function updateStreetWeatherCard(amount, type, streetname, rainVals, tempVals) {
     document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
 
 
-    if(rainEnabled || tempEnabled){
+    if (rainEnabled || tempEnabled) {
         document.getElementById('menge').innerHTML = 'Durchschnittlich ' + Math.round(amount) + ' ' + type;
     } else {
         document.getElementById('menge').innerHTML = Math.round(amount) + ' ' + type;
     }
 }
 
+
 function drawPathsWithWeatherData(drawData, name) {
     let tempVals = document.getElementById('tempSlider').noUiSlider.get();
     let rainVals = document.getElementById('rainSlider').noUiSlider.get().map(el => {
-        return el.substring(0, el.length-3);
+        return el.substring(0, el.length - 3);
     });
     console.log(rainVals);
 
@@ -446,16 +555,25 @@ function drawPathsWithWeatherData(drawData, name) {
 
 
     let street = drawData[0];
+    console.log(rainData);
     if (rainEnabled) {
+        console.log(+rainVals[0] + ' ' + +rainVals[1]);
         Object.keys(street).forEach(dateTime => {
-            if (+rainData[dateTime]  < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
-                allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+            if (+rainData[dateTime] < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
+                let ind = allowedDateTimes.findIndex(el => el === dateTime);
+                if(ind <0){
+                    console.log(dateTime);
+                } else {
 
-            } else {
+                    allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+                }
             }
         });
     }
+
+    console.log(allowedDateTimes.length);
     if (tempEnabled) {
+        console.log(+tempVals[0] + ' ' + tempVals[1]);
         Object.keys(street).forEach(dateTime => {
             if (+tempData[dateTime] < +tempVals[0] || +tempData[dateTime] > +tempVals[1]) {
                 allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
@@ -463,6 +581,8 @@ function drawPathsWithWeatherData(drawData, name) {
             }
         });
     }
+
+    console.log(allowedDateTimes.length);
 
 
     let summedObj = sumAndFilterDrawDataFaster(drawData, allowedDateTimes);
@@ -512,120 +632,6 @@ function drawPathsWithWeatherData(drawData, name) {
     })
 }
 
-
-//this is the start data, therefore display it
-
-
-function updateStreetCard(amount, type, streetname, date, time) {
-    let realStreetname = streetname.slice(0, streetname.length - 5);
-    let lane = `${streetname.slice(streetname.length - 5, streetname.length -1)} ${streetname.slice(streetname.length-1, streetname.length)}`;
-    document.getElementById('datetime').innerHTML = `Am ${date} von ${time} Uhr.`;
-    document.getElementById('strassenname').innerHTML = `${realStreetname} ${lane}`;
-    document.getElementById('menge').innerHTML = amount + ' ' + type;
-    switch(type){
-        case 'Velofahrer':
-            if(pwData.find(el => el.Strassenname === streetname)){
-                document.getElementById('type2').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
-            }
-            if(busData.find(el => el.Strassenname === streetname)){
-                document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
-            }
-            break;
-        case 'Busse':
-            if(veloData.find(el => el.Strassenname === streetname)){
-                document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
-            }
-            if(pwData.find(el => el.Strassenname === streetname)){
-                document.getElementById('type3').innerHTML = pwData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Personenwagen';
-            }
-            break;
-        case 'Personenwagen':
-            if(veloData.find(el => el.Strassenname === streetname)){
-                document.getElementById('type2').innerHTML = veloData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Velofahrer';
-            }
-            if(busData.find(el => el.Strassenname === streetname)){
-                document.getElementById('type3').innerHTML = busData.find(el => el.Strassenname === streetname)[`${date} ${time}`] + ' Busse';
-            }
-            break;
-    }
-}
-
-function clearStreetCard() {
-    document.getElementById('strassenname').innerHTML = 'Keine Strasse ausgwählt';
-    document.getElementById('menge').innerHTML = '';
-    document.getElementById('type2').innerHTML = '';
-    document.getElementById('type3').innerHTML = '';
-    document.getElementById('datetime').innerHTML = '';
-}
-
-function drawPathsWithTrafficData(drawData, date, time, name) {
-    let maxCount = 0;
-
-    drawData.forEach(el => {
-        Object.values(el).forEach(value => {
-            if (!isNaN(value) && +value > maxCount) {
-                maxCount = +value;
-            }
-        })
-    });
-    let scale = d3.scaleLog().base(2).domain([1, maxCount / 10]).range([0, 15]);
-     scale = d3.scaleLinear().domain([1, 250]).range([4, 10]);
-
-    drawData.forEach((el) => {
-        if (el.Strassenname.substring(el.Strassenname.length - 5, el.Strassenname.length) != lane) {
-            return;
-        }
-        domEl = d3.select(`#path-${el.Strassenname.slice(0, el.Strassenname.length - 5)}`);
-        if (domEl) {
-            if (+el[`${date} ${time}`] <= 0) {
-                domEl.style('stroke-width', 0);
-            } else {
-                domEl.style('stroke-width', scale(+el[`${date} ${time}`]));
-            }
-            domEl
-                .on("mouseover", (d) => {
-                    clearTimeout(divTimeoutHandle);
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html(el[`${date} ${time}`] + ' ' + name)
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                    updateStreetCard(el[`${date} ${time}`], name, el.Strassenname, date, time);
-                })
-                .on("mouseout", (d) => {
-                    divTimeoutHandle = setTimeout(() => {
-                        div.transition()
-                            .duration(200)
-                            .style('opacity', 0);
-                        clearStreetCard();
-                    }, 3000);
-
-                });
-        }
-    })
-}
-
-
-function readBusData(callback) {
-    d3.csv('./VisualisierungVerkehrsdatenBasel/bus.csv', (readData) => {
-        busData = readData;
-        if (callback) {
-            callback.call(undefined, readVeloData);
-        }
-    });
-
-
-}
-
-function readPwData(callback) {
-    d3.csv('./VisualisierungVerkehrsdatenBasel/pw.csv', (readData) => {
-        pwData = readData;
-        if (callback) {
-            callback.call(undefined, startDrawingFromType);
-        }
-    })
-}
 
 
 
