@@ -1,3 +1,19 @@
+// /Create map and its layer
+var map = new L.Map("map", {center: [47.55, 7.59], zoom: 13});
+var tiles = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+tiles.addTo(map);
+
+let animationInterval;
+let data;
+let veloData;
+let busData;
+let pwData;
+let selectedData;
+let trafType;
+let lane;
+let tempEnabled = false;
+let rainEnabled = false;
+
 $(document).ready(function () {
     trafType = ($('input[type=radio][name=type]:checked').val());
     lane = $('input[type=radio][name=lane]:checked').val();
@@ -55,11 +71,39 @@ $(document).ready(function () {
 
 });
 
-function openModal(){
-    var elems = document.querySelectorAll('.modal');
-    var instance = M.Modal.init(elems);
+//accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
+function getDateFromYearDay(yearDay) {
+    let firstOfJan = new Date(2017, 0, 1);
+    let wantedDate = new Date(2017, 0, 1);
+    wantedDate.setDate(yearDay);
+    return `${formatDate(wantedDate.getDate())}.${formatDate(wantedDate.getMonth() + 1)}.2017`
+}
 
-    instance[0].open();
+function formatDate(date) {
+    if (date > 9) {
+        return date;
+    } else {
+        return `0${date}`;
+    }
+}
+
+
+//accepts a number x between 0 and 86'400 and returns the time rounded to the next smaller full hour
+function getHourFromSeconds(seconds) {
+    let wantedDate = new Date(2017, 0, 1);
+    wantedDate.setSeconds(seconds);
+    return `${formatHours(wantedDate.getHours())}:00 - ${formatHours(wantedDate.getHours() + 1)}:00`
+}
+
+function formatHours(hour) {
+    if (hour < 10) {
+        return `0${hour}`;
+    }
+    else if (hour > 23) {
+        return '00';
+    } else {
+        return hour;
+    }
 }
 
 function clearTextBoxes(){
@@ -70,6 +114,14 @@ function clearTextBoxes(){
 
     clearStreetCard();
 }
+
+function openModal(){
+    var elems = document.querySelectorAll('.modal');
+    var instance = M.Modal.init(elems);
+
+    instance[0].open();
+}
+
 
 function tempCheckBoxClicked() {
     tempEnabled = !tempEnabled;
@@ -190,56 +242,10 @@ function startDrawingFromType() {
     }
 }
 
-//accepts a number x between 1 and 365 and returns the date on the x-th day since the year 2017 began
-function getDateFromYearDay(yearDay) {
-    let firstOfJan = new Date(2017, 0, 1);
-    let wantedDate = new Date(2017, 0, 1);
-    wantedDate.setDate(yearDay);
-    return `${formatDate(wantedDate.getDate())}.${formatDate(wantedDate.getMonth() + 1)}.2017`
-}
 
-function formatDate(date) {
-    if (date > 9) {
-        return date;
-    } else {
-        return `0${date}`;
-    }
-}
 
-//accepts a number x between 0 and 86'400 and returns the time rounded to the next smaller full hour
-function getHourFromSeconds(seconds) {
-    let firstOfJan = new Date(2017, 0, 1);
-    let wantedDate = new Date(2017, 0, 1);
-    wantedDate.setSeconds(seconds);
-    return `${formatHours(wantedDate.getHours())}:00 - ${formatHours(wantedDate.getHours() + 1)}:00`
-}
 
-function formatHours(hour) {
-    if (hour < 10) {
-        return `0${hour}`;
-    }
-    else if (hour > 23) {
-        return '00';
-    } else {
-        return hour;
-    }
-}
 
-// /Create map and its layer
-var map = new L.Map("map", {center: [47.55, 7.59], zoom: 13});
-var tiles = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-tiles.addTo(map);
-
-let animationInterval;
-let data;
-let veloData;
-let busData;
-let pwData;
-let selectedData;
-let trafType;
-let lane;
-let tempEnabled = false;
-let rainEnabled = false;
 
 //this is the hover path tooltip
 var div = d3.select("body").append("div")
