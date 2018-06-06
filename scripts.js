@@ -550,36 +550,45 @@ function drawPathsWithWeatherData(drawData, name) {
     let rainData = weatherData[1];
     let tempData = weatherData[0];
 
-    let allowedDateTimes = Object.keys(drawData[0]);
-    allowedDateTimes = allowedDateTimes.slice(0, allowedDateTimes.length);
+    let allowedDateTimes = Object.keys(rainData);
+    allowedDateTimes = allowedDateTimes.slice(1, allowedDateTimes.length);
 
+    console.log(allowedDateTimes);
 
-    let street = drawData[0];
-    console.log(rainData);
+    let removedElementCounter = 0;
     if (rainEnabled) {
-        console.log(+rainVals[0] + ' ' + +rainVals[1]);
-        Object.keys(street).forEach(dateTime => {
-            if (+rainData[dateTime] < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
-                let ind = allowedDateTimes.findIndex(el => el === dateTime);
-                if(ind <0){
-                    console.log(dateTime);
-                } else {
+        // console.log(+rainVals[0] + ' ' + +rainVals[1]);
+        // Object.keys(street).forEach(dateTime => {
+        //     if (+rainData[dateTime] < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
+        //         let ind = allowedDateTimes.findIndex(el => el === dateTime);
+        //         if(ind <0){
+        //             console.log(dateTime);
+        //         } else {
+        //
+        //             allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
+        //         }
+        //     }
+        // });
 
-                    allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
-                }
+        Object.keys(rainData).slice(1, allowedDateTimes.length).forEach((dateTime, index) => {
+            if (isNaN(rainData[dateTime]) || +rainData[dateTime] < +rainVals[0] || +rainData[dateTime] > +rainVals[1]) {
+                let ind = allowedDateTimes.indexOf(dateTime);
+                allowedDateTimes.splice(ind, 1);
+                removedElementCounter++;
             }
-        });
+        })
     }
 
-    console.log(allowedDateTimes.length);
     if (tempEnabled) {
-        console.log(+tempVals[0] + ' ' + tempVals[1]);
-        Object.keys(street).forEach(dateTime => {
+
+        Object.keys(rainData).slice(1, Object.keys(rainData).length).forEach((dateTime, index) => {
             if (+tempData[dateTime] < +tempVals[0] || +tempData[dateTime] > +tempVals[1]) {
-                allowedDateTimes.splice(allowedDateTimes.findIndex(el => el === dateTime), 1);
-            } else {
+                let ind = allowedDateTimes.indexOf(dateTime);
+                if(ind >= 0){
+                    allowedDateTimes.splice(ind, 1);
+                }
             }
-        });
+        })
     }
 
     console.log(allowedDateTimes.length);
