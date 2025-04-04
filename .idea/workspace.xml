@@ -6,17 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="be47a7b0-ae8e-447a-b4a1-10dad2174c3b" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chunk-BHC4SAPG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/chunk-C76ILPLF.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/chunk-EQVTEUXC.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/chunk-Q3SVVCBG.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/chunk-VJV2GDUY.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main-YIBT5NJO.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/polyfills-FFHMD2TL.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles-CUDAG6FX.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/template.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main-IOQDLXYO.js" beforeDir="false" afterPath="$PROJECT_DIR$/main-V7UWUJJT.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +203,7 @@
       <workItem from="1527502749088" duration="11674000" />
       <workItem from="1527680137878" duration="3249000" />
       <workItem from="1528321938793" duration="5396000" />
-      <workItem from="1743606392113" duration="5395000" />
+      <workItem from="1743606392113" duration="6455000" />
     </task>
     <task id="LOCAL-00001" summary="move to legacy folder">
       <option name="closed" value="true" />
@@ -270,7 +261,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743769891813</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="improve csv import">
+      <option name="closed" value="true" />
+      <created>1743771661993</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1743771661993</updated>
+    </task>
+    <task id="LOCAL-00009" summary="add = to symbols to be replaced for id">
+      <option name="closed" value="true" />
+      <created>1743771856432</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743771856432</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -324,7 +331,9 @@
     <MESSAGE value="white background, 3 card per page" />
     <MESSAGE value="fix dark bg in list" />
     <MESSAGE value="styling" />
-    <option name="LAST_COMMIT_MESSAGE" value="styling" />
+    <MESSAGE value="improve csv import" />
+    <MESSAGE value="add = to symbols to be replaced for id" />
+    <option name="LAST_COMMIT_MESSAGE" value="add = to symbols to be replaced for id" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
