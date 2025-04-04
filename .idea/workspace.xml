@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="be47a7b0-ae8e-447a-b4a1-10dad2174c3b" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main-LORVNNDO.js" beforeDir="false" afterPath="$PROJECT_DIR$/main-MTAZ6ULW.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles-REL2ZTJX.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles-TIGOTQG3.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,7 +204,7 @@
       <workItem from="1527502749088" duration="11674000" />
       <workItem from="1527680137878" duration="3249000" />
       <workItem from="1528321938793" duration="5396000" />
-      <workItem from="1743606392113" duration="2275000" />
+      <workItem from="1743606392113" duration="3423000" />
     </task>
     <task id="LOCAL-00001" summary="move to legacy folder">
       <option name="closed" value="true" />
@@ -227,7 +230,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743679673185</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="import fixes">
+      <option name="closed" value="true" />
+      <created>1743765269882</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743765269882</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -277,7 +288,8 @@
     <MESSAGE value="move to legacy folder" />
     <MESSAGE value="add smart 10 creator" />
     <MESSAGE value="empty readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="empty readme" />
+    <MESSAGE value="import fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="import fixes" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
