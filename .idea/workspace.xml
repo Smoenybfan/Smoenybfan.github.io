@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="be47a7b0-ae8e-447a-b4a1-10dad2174c3b" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/chunk-BHC4SAPG.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chunk-C76ILPLF.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chunk-EQVTEUXC.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chunk-Q3SVVCBG.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chunk-VJV2GDUY.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main-QLGAIS3X.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/polyfills-FFHMD2TL.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/styles-REL2ZTJX.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/template.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -161,17 +153,14 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Documents\Code\JS\Smoenybfan.github.io" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Documents\Code\JS\Smoenybfan.github.io" />
+      <recent name="E:\Documents\Code\JS\Smoenybfan.github.io\basel" />
+    </key>
   </component>
   <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="Unnamed" type="JavascriptDebugType" uri="http://localhost:63342">
@@ -212,7 +201,7 @@
       <workItem from="1527502749088" duration="11674000" />
       <workItem from="1527680137878" duration="3249000" />
       <workItem from="1528321938793" duration="5396000" />
-      <workItem from="1743606392113" duration="295000" />
+      <workItem from="1743606392113" duration="2275000" />
     </task>
     <task id="LOCAL-00001" summary="move to legacy folder">
       <option name="closed" value="true" />
@@ -222,7 +211,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743606497307</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="add smart 10 creator">
+      <option name="closed" value="true" />
+      <created>1743606713361</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1743606713361</updated>
+    </task>
+    <task id="LOCAL-00003" summary="empty readme">
+      <option name="closed" value="true" />
+      <created>1743679673185</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743679673185</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -254,12 +259,25 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="move to legacy folder" />
-    <option name="LAST_COMMIT_MESSAGE" value="move to legacy folder" />
+    <MESSAGE value="add smart 10 creator" />
+    <MESSAGE value="empty readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="empty readme" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
